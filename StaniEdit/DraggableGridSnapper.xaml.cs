@@ -39,6 +39,8 @@ namespace StaniEdit
             mainWindow = main;
             Width = tileWidth * main.tileWidth;
             Height = tileHeight * main.tileHeight;
+            SetValue(Canvas.LeftProperty, 0.0);
+            SetValue(Canvas.TopProperty, 0.0);
         }
 
         public void Select() {

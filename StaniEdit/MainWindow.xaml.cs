@@ -167,6 +167,44 @@ namespace StaniEdit
 
         }
 
+        private void btnGuard_Click(object sender, RoutedEventArgs e) {
+            Guard g = new Guard();
+            g.Init(this);
+            canvasRoom.Children.Add(g);
+            stuffLayer.Add(g);
+            if (!(bool)radStuff.IsChecked)
+            {
+                EnableStuffLayer();
+                radStuff.IsChecked = true;
+            }
+            if (selected != null)
+                selected.Deselect();
+            selected = g;
+            g.Select();
+        }
+
+        private void btnItem_Click(object sender, RoutedEventArgs e)
+        {
+            Item i = new Item();
+            i.Init(this);
+            canvasRoom.Children.Add(i);
+            stuffLayer.Add(i);
+            if (!(bool)radStuff.IsChecked)
+            {
+                EnableStuffLayer();
+                radStuff.IsChecked = true;
+            }
+            if (selected != null)
+                selected.Deselect();
+            selected = i;
+            i.Select();
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void radFloor_Checked(object sender, RoutedEventArgs e)
         {
             EnableFloorLayer();
@@ -332,7 +370,27 @@ namespace StaniEdit
                     if (!w_.Horizontal())
                         writer.Write(w_.getLeftTile() + "," + w_.getTopTile() + " ");
                 }
-                //writer.Write("\n");
+                writer.Write("\n");
+
+                //Items:
+                foreach (DraggableGridSnapper s in stuffLayer)
+                {
+                    if (s is Item) { 
+                         writer.Write(s.getLeftTile() + "," + s.getTopTile() + " ");
+                    }                       
+                }
+                writer.Write("\n");
+
+                //Guards:
+                foreach (DraggableGridSnapper s in stuffLayer)
+                {
+                    if (s is Guard)
+                    {
+                        writer.Write(s.getLeftTile() + "," + s.getTopTile() + " ");
+                    }
+                }
+                writer.Write("\n");
+
             }
             
         }

@@ -58,6 +58,8 @@
     </ApplicationDefinition>
     <Compile Include="DoorWall.cs" />
     <Compile Include="DraggableGridLineSnapper.cs" />
+    <Compile Include="Guard.cs" />
+    <Compile Include="Item.cs" />
     <Compile Include="Wall.cs" />
     <Page Include="DraggableGridSnapper.xaml">
       <SubType>Designer</SubType>
