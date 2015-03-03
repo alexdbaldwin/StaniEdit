@@ -24,11 +24,15 @@ namespace StaniEdit
         protected double FirstXPos, FirstYPos, FirstArrowXPos, FirstArrowYPos;
         protected MainWindow mainWindow;
 
-        protected int tileWidth = 4;
-        protected int tileHeight = 4;
+        protected double realWidth = 400.0;
+        protected double realHeight = 400.0;
 
         protected int zIndex = 1;
         protected Brush color = new SolidColorBrush(Colors.Magenta);
+
+        protected double spawnChance = 1.0;
+
+        private bool rightDown = false;
 
         public DraggableGridSnapper()
         {
@@ -37,8 +41,8 @@ namespace StaniEdit
 
         public virtual void Init(MainWindow main) {
             mainWindow = main;
-            Width = tileWidth * main.tileWidth;
-            Height = tileHeight * main.tileHeight;
+            Width = main.widthRatio * realWidth;
+            Height = main.heightRatio * realHeight;
             SetValue(Canvas.LeftProperty, 0.0);
             SetValue(Canvas.TopProperty, 0.0);
         }
@@ -57,11 +61,13 @@ namespace StaniEdit
         public void Enable() {
             IsEnabled = true;
             rect.Fill = color;
+            this.IsHitTestVisible = true;
         }
 
         public void Disable() {
             IsEnabled = false;
-            rect.Fill = new SolidColorBrush(Color.FromArgb(20,0,0,0));
+            rect.Fill = new SolidColorBrush(Color.FromArgb(40,0,0,0));
+            this.IsHitTestVisible = false;
         }
         
 
@@ -79,6 +85,10 @@ namespace StaniEdit
                 FirstArrowYPos = e.GetPosition(Parent as Control).Y - FirstYPos;
                 e.Handled = true;
 
+            }
+
+            if (e.RightButton == MouseButtonState.Pressed) {
+                rightDown = true;
             }
 
 
@@ -127,12 +137,15 @@ namespace StaniEdit
                 dragging = false;
                 e.Handled = true;
             }
+
+            if (e.RightButton == MouseButtonState.Released && rightDown) {
+                rightDown = false;
+            }
             
         }
 
         protected virtual void SnapToGrid() {
-            //double x = GetValue(Canvas.LeftProperty);
-            //double y = GetValue(Canvas)
+
             SetValue(Canvas.LeftProperty, (int)((double)GetValue(Canvas.LeftProperty) / mainWindow.tileWidth) * mainWindow.tileWidth);
             SetValue(Canvas.TopProperty, (int)((double)GetValue(Canvas.TopProperty) / mainWindow.tileHeight) * mainWindow.tileHeight);
 

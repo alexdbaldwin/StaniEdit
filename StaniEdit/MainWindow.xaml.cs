@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,9 +25,15 @@ namespace StaniEdit
     /// </summary>
     public partial class MainWindow : Window
     {
-        public int gridX = 12;
-        public int gridY = 12;
+        public int gridX = 36;
+        public int gridY = 36;
         public double tileWidth, tileHeight;
+
+        public double realWidth = 1200.0;
+        public double realHeight = 1200.0;
+
+        public double widthRatio = 1.0;
+        public double heightRatio = 1.0;
 
         private List<DraggableGridSnapper> floorLayer = new List<DraggableGridSnapper>();
         private List<DraggableGridSnapper> wallLayer = new List<DraggableGridSnapper>();
@@ -35,16 +42,35 @@ namespace StaniEdit
         private DraggableGridSnapper dragging = null;
         private DraggableGridSnapper selected = null;
 
+        private string currentFile = "";
+
         private DoorWall northDoor = null, eastDoor = null, southDoor = null, westDoor = null;
 
         public MainWindow()
         {
             InitializeComponent();
 
+            RedrawGrid(3, 3);
+
+            widthRatio = canvasRoom.Width / realWidth;
+            heightRatio = canvasRoom.Height / realHeight;
+
+        }
+
+        private void RedrawGrid(int x, int y) {
+            gridX = x;
+            gridY = y;
+
             tileWidth = canvasRoom.Width / gridX;
             tileHeight = canvasRoom.Height / gridY; 
 
-            for(int i = 0; i <= gridX; ++i){
+            for (int i = 0; i < canvasRoom.Children.Count; ++i) {
+                if(canvasRoom.Children[i] is Line)
+                    canvasRoom.Children.RemoveAt(i--);
+            }
+
+            for (int i = 0; i <= gridX; ++i)
+            {
                 Line l = new Line();
                 canvasRoom.Children.Add(l);
                 l.X1 = canvasRoom.Width / gridX * i;
@@ -116,7 +142,7 @@ namespace StaniEdit
 
         private void btnFloor_Click(object sender, RoutedEventArgs e)
         {
-            Floor f = new Floor(4, 4);
+            Floor f = new Floor();
             f.Init(this);
             canvasRoom.Children.Add(f);
             floorLayer.Add(f);
@@ -133,7 +159,7 @@ namespace StaniEdit
 
         private void btnWallH_Click(object sender, RoutedEventArgs e)
         {
-            Wall w = new Wall(4, 1);
+            Wall w = new Wall(400.0, 20.0);
             w.Init(this);
             canvasRoom.Children.Add(w);
             wallLayer.Add(w);
@@ -150,7 +176,7 @@ namespace StaniEdit
 
         private void btnWallV_Click(object sender, RoutedEventArgs e)
         {
-            Wall w = new Wall(1, 4);
+            Wall w = new Wall(20.0, 400.0);
             w.Init(this);
             canvasRoom.Children.Add(w);
             wallLayer.Add(w);
@@ -202,7 +228,20 @@ namespace StaniEdit
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-
+            selected = null;
+            dragging = null;
+            canvasRoom.Children.Clear();
+            floorLayer.Clear();
+            wallLayer.Clear();
+            stuffLayer.Clear();
+            EnableFloorLayer();
+            chkNorth.IsChecked = false;
+            chkEast.IsChecked = false;
+            chkSouth.IsChecked = false;
+            chkWest.IsChecked = false;
+            radFloor.IsChecked = true;
+            cmbRoomType.SelectedIndex = 0;
+            cmbRarity.SelectedIndex = 0;
         }
 
         private void radFloor_Checked(object sender, RoutedEventArgs e)
@@ -212,6 +251,7 @@ namespace StaniEdit
 
         private void EnableFloorLayer()
         {
+            RedrawGrid(3, 3);
             if (selected != null)
             {
                 selected.Deselect();
@@ -229,6 +269,7 @@ namespace StaniEdit
 
         private void EnableStuffLayer()
         {
+            RedrawGrid(36, 36);
             if (selected != null)
             {
                 selected.Deselect();
@@ -246,6 +287,7 @@ namespace StaniEdit
 
         private void EnableWallsLayer()
         {
+            RedrawGrid(12, 12);
             if (selected != null)
             {
                 selected.Deselect();
@@ -272,39 +314,39 @@ namespace StaniEdit
 
         private void chkNorth_Checked(object sender, RoutedEventArgs e)
         {
-            northDoor = new DoorWall(4, 1);
+            northDoor = new DoorWall(400.0, 20.0);
             northDoor.Init(this);
             canvasRoom.Children.Add(northDoor);
-            northDoor.SetValue(Canvas.LeftProperty, tileWidth * 4);
+            northDoor.SetValue(Canvas.LeftProperty, 400.0 * widthRatio);
             northDoor.SetValue(Canvas.TopProperty, 0.0);
         }
 
 
         private void chkEast_Checked(object sender, RoutedEventArgs e)
         {
-            eastDoor = new DoorWall(1, 4);
+            eastDoor = new DoorWall(20.0, 400.0);
             eastDoor.Init(this);
             canvasRoom.Children.Add(eastDoor);
-            eastDoor.SetValue(Canvas.LeftProperty, tileWidth * gridX - eastDoor.Width);
-            eastDoor.SetValue(Canvas.TopProperty, tileHeight * 4);
+            eastDoor.SetValue(Canvas.LeftProperty, canvasRoom.Width - eastDoor.Width);
+            eastDoor.SetValue(Canvas.TopProperty, 400.0 * heightRatio);
         }
 
         private void chkSouth_Checked(object sender, RoutedEventArgs e)
         {
-            southDoor = new DoorWall(4, 1);
+            southDoor = new DoorWall(400.0, 20.0);
             southDoor.Init(this);
             canvasRoom.Children.Add(southDoor);
-            southDoor.SetValue(Canvas.LeftProperty, tileWidth * 4);
-            southDoor.SetValue(Canvas.TopProperty, tileHeight * gridY - southDoor.Height);
+            southDoor.SetValue(Canvas.LeftProperty, 400.0 * widthRatio);
+            southDoor.SetValue(Canvas.TopProperty, canvasRoom.Height - southDoor.Height);
         }
 
         private void chkWest_Checked(object sender, RoutedEventArgs e)
         {
-            westDoor = new DoorWall(1, 4);
+            westDoor = new DoorWall(20.0, 400.0);
             westDoor.Init(this);
             canvasRoom.Children.Add(westDoor);
             westDoor.SetValue(Canvas.LeftProperty, 0.0);
-            westDoor.SetValue(Canvas.TopProperty, tileHeight * 4);
+            westDoor.SetValue(Canvas.TopProperty, 400.0 * heightRatio);
         }
 
         private void chkNorth_Unchecked(object sender, RoutedEventArgs e)
@@ -333,67 +375,98 @@ namespace StaniEdit
 
         private void menuSave_Click(object sender, RoutedEventArgs e)
         {
+            if (currentFile != "")
+            {
+                SaveRoom(currentFile);
+            }
+            else {
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "Room file (*.room)|*.room";
+                if (sfd.ShowDialog() == true)
+                {
+                    SaveRoom(sfd.FileName);
+                    currentFile = sfd.FileName;
+                }
+            } 
+        }
+
+        private void menuSaveAs_Click(object sender, RoutedEventArgs e)
+        {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Room file (*.room)|*.room";
-            if (sfd.ShowDialog() == true) {
+            if (sfd.ShowDialog() == true)
+            {
                 SaveRoom(sfd.FileName);
+                currentFile = sfd.FileName;
             }
+        }
+
+        private void menuLoad_Click(object sender, RoutedEventArgs e)
+        {
         }
 
         private void SaveRoom(string file) {
-            using (StreamWriter writer = new StreamWriter(new FileStream(file, FileMode.Create, FileAccess.Write))) {
-                //External doors:
-                if(northDoor != null) writer.Write(1); else writer.Write(0);
-                if(eastDoor != null) writer.Write(1); else writer.Write(0);
-                if(southDoor != null) writer.Write(1); else writer.Write(0);
-                if(westDoor != null) writer.Write(1); else writer.Write(0);
-                writer.Write("\n");
 
-                //Floor:
-                foreach(DraggableGridSnapper f in floorLayer){
-                    writer.Write(f.getLeftTile() + "," + f.getTopTile() + " ");
-                }
-                writer.Write("\n");
+            FileStream fs = new FileStream(file, FileMode.Create, FileAccess.Write);
 
-                //Horizontal walls:
-                foreach (DraggableGridSnapper w in wallLayer) {
-                    Wall w_ = w as Wall;
-                    if (w_.Horizontal()) 
-                        writer.Write(w_.getLeftTile() + "," + w_.getTopTile() + " ");
-                }
-                writer.Write("\n");
+                List<MeshDefinition> meshes = new List<MeshDefinition>();
+                meshes.Add(new MeshDefinition() { x = 100.0, y = 100.0, staticMesh = "floor"});
+                RoomDefinition room = new RoomDefinition() { northDoor = false, eastDoor = true, southDoor = false, westDoor = true, meshes = meshes };
 
-                //Vertical walls:
-                foreach (DraggableGridSnapper w in wallLayer)
-                {
-                    Wall w_ = w as Wall;
-                    if (!w_.Horizontal())
-                        writer.Write(w_.getLeftTile() + "," + w_.getTopTile() + " ");
-                }
-                writer.Write("\n");
+                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RoomDefinition));
+                serializer.WriteObject(fs, room);
 
-                //Items:
-                foreach (DraggableGridSnapper s in stuffLayer)
-                {
-                    if (s is Item) { 
-                         writer.Write(s.getLeftTile() + "," + s.getTopTile() + " ");
-                    }                       
-                }
-                writer.Write("\n");
+                ////External doors:
+                //if(northDoor != null) writer.Write(1); else writer.Write(0);
+                //if(eastDoor != null) writer.Write(1); else writer.Write(0);
+                //if(southDoor != null) writer.Write(1); else writer.Write(0);
+                //if(westDoor != null) writer.Write(1); else writer.Write(0);
+                //writer.Write("\n");
 
-                //Guards:
-                foreach (DraggableGridSnapper s in stuffLayer)
-                {
-                    if (s is Guard)
-                    {
-                        writer.Write(s.getLeftTile() + "," + s.getTopTile() + " ");
-                    }
-                }
-                writer.Write("\n");
+                ////Floor:
+                //foreach(DraggableGridSnapper f in floorLayer){
+                //    writer.Write(f.getLeftTile() + "," + f.getTopTile() + " ");
+                //}
+                //writer.Write("\n");
 
-            }
+                ////Horizontal walls:
+                //foreach (DraggableGridSnapper w in wallLayer) {
+                //    Wall w_ = w as Wall;
+                //    if (w_.Horizontal()) 
+                //        writer.Write(w_.getLeftTile() + "," + w_.getTopTile() + " ");
+                //}
+                //writer.Write("\n");
+
+                ////Vertical walls:
+                //foreach (DraggableGridSnapper w in wallLayer)
+                //{
+                //    Wall w_ = w as Wall;
+                //    if (!w_.Horizontal())
+                //        writer.Write(w_.getLeftTile() + "," + w_.getTopTile() + " ");
+                //}
+                //writer.Write("\n");
+
+                ////Items:
+                //foreach (DraggableGridSnapper s in stuffLayer)
+                //{
+                //    if (s is Item) { 
+                //         writer.Write(s.getLeftTile() + "," + s.getTopTile() + " ");
+                //    }                       
+                //}
+                //writer.Write("\n");
+
+                ////Guards:
+                //foreach (DraggableGridSnapper s in stuffLayer)
+                //{
+                //    if (s is Guard)
+                //    {
+                //        writer.Write(s.getLeftTile() + "," + s.getTopTile() + " ");
+                //    }
+                //}
+                //writer.Write("\n");
             
         }
+
 
 
 

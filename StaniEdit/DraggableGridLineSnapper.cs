@@ -29,22 +29,12 @@ namespace StaniEdit
 
         public override void Init(MainWindow main)
         {
-            if (tileWidth > 1)
+            if (realWidth > 100.0)
             {
                 horizontal = true;
             }
-            mainWindow = main;
 
-            if (horizontal)
-            {
-                Width = tileWidth * main.tileWidth;
-                Height = main.tileHeight / 2;
-            }
-            else
-            {
-                Width = main.tileWidth / 2;
-                Height = tileHeight * main.tileHeight;
-            }
+            base.Init(main);
         }
 
         public bool Horizontal() {

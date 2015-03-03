@@ -11,7 +11,7 @@ namespace StaniEdit
     class DoorWall : Wall
     {
 
-        public DoorWall(int width, int height) : base(width,height){
+        public DoorWall(double width, double height) : base(width,height){
             IsEnabled = false;
             color = new SolidColorBrush(Colors.Black);
             rect.Fill = color;

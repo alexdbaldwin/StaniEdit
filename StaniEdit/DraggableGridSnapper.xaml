@@ -5,5 +5,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100" >
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <StackPanel Orientation="Horizontal">
+                <Label>
+                    Spawn chance: 
+                </Label>
+                <ComboBox SelectedIndex="0">
+                    <ComboBoxItem>100%</ComboBoxItem>
+                    <ComboBoxItem>90%</ComboBoxItem>
+                    <ComboBoxItem>80%</ComboBoxItem>
+                    <ComboBoxItem>70%</ComboBoxItem>
+                    <ComboBoxItem>60%</ComboBoxItem>
+                    <ComboBoxItem>50%</ComboBoxItem>
+                    <ComboBoxItem>40%</ComboBoxItem>
+                    <ComboBoxItem>30%</ComboBoxItem>
+                    <ComboBoxItem>20%</ComboBoxItem>
+                    <ComboBoxItem>10%</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            
+        </ContextMenu>  
+    </UserControl.ContextMenu>
     <Rectangle Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="3"></Rectangle>
+   
 </UserControl>

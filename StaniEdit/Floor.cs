@@ -12,17 +12,17 @@ namespace StaniEdit
     {
 
         public Floor() {
-            tileWidth = 4;
-            tileHeight = 4;
+            realWidth = 400.0;
+            realHeight = 400.0;
             color = new SolidColorBrush(Colors.SkyBlue);
             rect.Fill = color;
             zIndex = 0;
             SetValue(Canvas.ZIndexProperty, zIndex);
         }
 
-        public Floor(int width, int height) {
-            tileWidth = width;
-            tileHeight = height;
+        public Floor(double width, double height) {
+            realWidth = width;
+            realHeight = width;
             color = new SolidColorBrush(Colors.SkyBlue);
             rect.Fill = color;
             zIndex = 0;

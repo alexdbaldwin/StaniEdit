@@ -12,18 +12,18 @@ namespace StaniEdit
     {
 
         public Guard() {
-            tileWidth = 1;
-            tileHeight = 1;
+            realWidth = 100.0;
+            realHeight = 100.0;
             color = new SolidColorBrush(Colors.Teal);
             rect.Fill = color;
             zIndex = 2;
             SetValue(Canvas.ZIndexProperty, zIndex);
         }
 
-        public Guard(int width, int height)
+        public Guard(double width, double height)
         {
-            tileWidth = width;
-            tileHeight = height;
+            realWidth = width;
+            realHeight = height;
             color = new SolidColorBrush(Colors.Teal);
             rect.Fill = color;
             zIndex = 2;
