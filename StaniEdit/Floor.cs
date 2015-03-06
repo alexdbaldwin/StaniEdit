@@ -14,19 +14,18 @@ namespace StaniEdit
         public Floor() {
             realWidth = 400.0;
             realHeight = 400.0;
+            snapMode = SnapMode.TileSnap;
+            meshType = "floor";
             color = new SolidColorBrush(Colors.SkyBlue);
             rect.Fill = color;
             zIndex = 0;
             SetValue(Canvas.ZIndexProperty, zIndex);
         }
 
-        public Floor(double width, double height) {
+        public Floor(double width, double height) : this(){
             realWidth = width;
             realHeight = width;
-            color = new SolidColorBrush(Colors.SkyBlue);
-            rect.Fill = color;
-            zIndex = 0;
-            SetValue(Canvas.ZIndexProperty, zIndex);
+
         }
     }
 }

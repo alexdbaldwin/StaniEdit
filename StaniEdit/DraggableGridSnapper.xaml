@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100" >
     <UserControl.ContextMenu>
-        <ContextMenu>
+        <ContextMenu Name="contextMenu">
             <StackPanel Orientation="Horizontal">
                 <Label>
                     Spawn chance: 
@@ -27,6 +27,10 @@
             
         </ContextMenu>  
     </UserControl.ContextMenu>
-    <Rectangle Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="3"></Rectangle>
+    <Canvas Name="canvasHolder">
+        <Rectangle Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="3" Width="{Binding Path=ActualWidth, ElementName=canvasHolder}" Height="{Binding Path=ActualHeight, ElementName=canvasHolder}"></Rectangle>
+        <Label Name="lblLabel" Foreground="Black"></Label>
+    </Canvas>
+    
    
 </UserControl>

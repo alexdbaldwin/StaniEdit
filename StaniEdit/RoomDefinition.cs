@@ -8,27 +8,78 @@ using System.Threading.Tasks;
 namespace StaniEdit
 {
     [DataContract]
+    class SpawnGroupDefinition {
+        [DataMember]
+        public double spawnChance = 1.0;
+        [DataMember]
+        public List<MeshDefinition> meshes = new List<MeshDefinition>();
+        [DataMember]
+        public List<ItemDefinition> items = new List<ItemDefinition>();
+        [DataMember]
+        public List<GuardDefinition> guards = new List<GuardDefinition>();
+        [DataMember]
+        public List<PatrolPointDefinition> patrolPoints = new List<PatrolPointDefinition>();
+    }
+
+    [DataContract]
     class MeshDefinition {
         [DataMember]
-        public double x;
+        public double x = 0;
         [DataMember]
-        public double y;
+        public double y = 0;
         [DataMember]
         public String staticMesh;
+    }
+
+    [DataContract]
+    class GuardDefinition
+    {
+        [DataMember]
+        public double x = 0;
+        [DataMember]
+        public double y = 0;
+        [DataMember]
+        public int patrolRouteIndex = -1;
+        [DataMember]
+        public int startIndex = 0;
+    }
+
+    [DataContract]
+    class PatrolPointDefinition {
+        [DataMember]
+        public double x = 0;
+        [DataMember]
+        public double y = 0;
+        [DataMember]
+        public int patrolRouteIndex = -1;
+        [DataMember]
+        public int index = 0;
+    }
+
+    [DataContract]
+    class ItemDefinition {
+        [DataMember]
+        public double x = 0;
+        [DataMember]
+        public double y = 0;
     }
 
     [DataContract]
     class RoomDefinition
     {
         [DataMember]
-        public bool northDoor;
+        public bool northDoor = false;
         [DataMember]
-        public bool eastDoor;
+        public bool eastDoor = false;
         [DataMember]
-        public bool southDoor;
+        public bool southDoor = false;
         [DataMember]
-        public bool westDoor;
+        public bool westDoor = false;
         [DataMember]
-        public List<MeshDefinition> meshes;
+        public int roomType = 0; //Types are: 0, normal; 1, treasure; 2, objective; 3, start.
+        [DataMember]
+        public int roomRarity = 0;
+        [DataMember]
+        public List<SpawnGroupDefinition> spawnGroups = new List<SpawnGroupDefinition>();
     }
 }

@@ -20,6 +20,9 @@ namespace StaniEdit
     /// </summary>
     public partial class DraggableGridSnapper : UserControl
     {
+        public enum SnapMode { TileSnap, HorizontalLineSnap, VerticalLineSnap, CornerSnap, Free };
+        public SnapMode snapMode = SnapMode.TileSnap;
+
         protected bool dragging = false;
         protected double FirstXPos, FirstYPos, FirstArrowXPos, FirstArrowYPos;
         protected MainWindow mainWindow;
@@ -31,12 +34,23 @@ namespace StaniEdit
         protected Brush color = new SolidColorBrush(Colors.Magenta);
 
         protected double spawnChance = 1.0;
-
-        private bool rightDown = false;
+        protected string meshType = "default";
 
         public DraggableGridSnapper()
         {
             InitializeComponent();
+        }
+
+        public double RealX
+        {
+            get { return (double)GetValue(Canvas.LeftProperty) / mainWindow.widthRatio; }
+        }
+        public double RealY
+        {
+            get { return (double)GetValue(Canvas.TopProperty) / mainWindow.heightRatio; }
+        }
+        public string MeshType {
+            get { return meshType; }
         }
 
         public virtual void Init(MainWindow main) {
@@ -87,11 +101,6 @@ namespace StaniEdit
 
             }
 
-            if (e.RightButton == MouseButtonState.Pressed) {
-                rightDown = true;
-            }
-
-
         }
 
         public void OnMouseMove_(MouseEventArgs e) {
@@ -106,11 +115,7 @@ namespace StaniEdit
 
             if (dragging)
             {
-                //if (e.LeftButton != MouseButtonState.Pressed) {
-                //    mainWindow.dragging = null;
-                //    dragging = false;
-                //    return;
-                //}
+
                 SetValue(Canvas.LeftProperty,
                      e.GetPosition(Parent as FrameworkElement).X - FirstXPos);
 
@@ -137,15 +142,37 @@ namespace StaniEdit
                 dragging = false;
                 e.Handled = true;
             }
-
-            if (e.RightButton == MouseButtonState.Released && rightDown) {
-                rightDown = false;
-            }
             
         }
 
         protected virtual void SnapToGrid() {
 
+            
+
+            switch (snapMode) { 
+                case SnapMode.TileSnap:
+                    TileSnap();
+                    break;
+                case SnapMode.HorizontalLineSnap:
+                    HorizontalLineSnap();
+                    break;
+                case SnapMode.VerticalLineSnap:
+                    VerticalLineSnap();
+                    break;
+                case SnapMode.CornerSnap:
+                    CornerSnap();
+                    break;
+                case SnapMode.Free:
+                    FreeSnap();
+                    break;
+            }
+
+
+            
+
+        }
+
+        private void TileSnap() {
             SetValue(Canvas.LeftProperty, (int)((double)GetValue(Canvas.LeftProperty) / mainWindow.tileWidth) * mainWindow.tileWidth);
             SetValue(Canvas.TopProperty, (int)((double)GetValue(Canvas.TopProperty) / mainWindow.tileHeight) * mainWindow.tileHeight);
 
@@ -157,16 +184,65 @@ namespace StaniEdit
                 SetValue(Canvas.TopProperty, 0.0);
             if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
                 SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
-
         }
 
-        public virtual int getTopTile() {
-            return (int)((double)GetValue(Canvas.TopProperty) / mainWindow.tileHeight);
+        private void HorizontalLineSnap() {
+            SetValue(Canvas.LeftProperty, (int)((double)GetValue(Canvas.LeftProperty) / mainWindow.tileWidth) * mainWindow.tileWidth);
+            SetValue(Canvas.TopProperty, Math.Round((double)GetValue(Canvas.TopProperty) / mainWindow.tileHeight) * mainWindow.tileHeight - Height/2);
+
+            if ((double)GetValue(Canvas.LeftProperty) < 0)
+                SetValue(Canvas.LeftProperty, 0.0);
+            if ((double)GetValue(Canvas.LeftProperty) + Width > (Parent as Canvas).Width)
+                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - Width);
+            if ((double)GetValue(Canvas.TopProperty) < 0)
+                SetValue(Canvas.TopProperty, 0.0);
+            if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
+                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
         }
 
-        public virtual int getLeftTile() {
-            return (int)((double)GetValue(Canvas.LeftProperty) / mainWindow.tileWidth);
+        private void VerticalLineSnap() {
+
+            SetValue(Canvas.LeftProperty, Math.Round((double)GetValue(Canvas.LeftProperty) / mainWindow.tileWidth) * mainWindow.tileWidth - Width/2);
+            SetValue(Canvas.TopProperty, (int)((double)GetValue(Canvas.TopProperty) / mainWindow.tileHeight) * mainWindow.tileHeight);
+
+            if ((double)GetValue(Canvas.LeftProperty) < 0)
+                SetValue(Canvas.LeftProperty, 0.0);
+            if ((double)GetValue(Canvas.LeftProperty) + Width > (Parent as Canvas).Width)
+                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - Width);
+            if ((double)GetValue(Canvas.TopProperty) < 0)
+                SetValue(Canvas.TopProperty, 0.0);
+            if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
+                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
         }
+
+        private void CornerSnap() {
+            //To do
+
+            if ((double)GetValue(Canvas.LeftProperty) < 0)
+                SetValue(Canvas.LeftProperty, 0.0);
+            if ((double)GetValue(Canvas.LeftProperty) + Width > (Parent as Canvas).Width)
+                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - Width);
+            if ((double)GetValue(Canvas.TopProperty) < 0)
+                SetValue(Canvas.TopProperty, 0.0);
+            if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
+                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
+        }
+
+        private void FreeSnap() {
+            //Do not snap, just limit to grid bounds
+
+            if ((double)GetValue(Canvas.LeftProperty) < 0)
+                SetValue(Canvas.LeftProperty, 0.0);
+            if ((double)GetValue(Canvas.LeftProperty) + Width > (Parent as Canvas).Width)
+                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - Width);
+            if ((double)GetValue(Canvas.TopProperty) < 0)
+                SetValue(Canvas.TopProperty, 0.0);
+            if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
+                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
+        }
+
+       
+
 
     }
 }

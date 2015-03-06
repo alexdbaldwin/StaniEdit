@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Json;
@@ -38,6 +39,11 @@ namespace StaniEdit
         private List<DraggableGridSnapper> floorLayer = new List<DraggableGridSnapper>();
         private List<DraggableGridSnapper> wallLayer = new List<DraggableGridSnapper>();
         private List<DraggableGridSnapper> stuffLayer = new List<DraggableGridSnapper>();
+
+        public ObservableCollection<ObservableCollection<PatrolPoint>> patrolRoutes = new ObservableCollection<ObservableCollection<PatrolPoint>>();
+        public ObservableCollection<int> patrolRouteIndices = new ObservableCollection<int>();
+
+        public List<Color> patrolRouteColors = new List<Color>() { Colors.Red, Colors.Yellow, Colors.Blue, Colors.Brown, Colors.Chartreuse, Colors.Fuchsia, Colors.Gainsboro, Colors.Firebrick };
 
         private DraggableGridSnapper dragging = null;
         private DraggableGridSnapper selected = null;
@@ -226,6 +232,23 @@ namespace StaniEdit
             i.Select();
         }
 
+        private void btnPatrolPoint_Click(object sender, RoutedEventArgs e)
+        {
+            PatrolPoint pp = new PatrolPoint();
+            pp.Init(this);
+            canvasRoom.Children.Add(pp);
+            stuffLayer.Add(pp);
+            if (!(bool)radStuff.IsChecked)
+            {
+                EnableStuffLayer();
+                radStuff.IsChecked = true;
+            }
+            if (selected != null)
+                selected.Deselect();
+            selected = pp;
+            pp.Select();
+        }
+
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             selected = null;
@@ -242,6 +265,8 @@ namespace StaniEdit
             radFloor.IsChecked = true;
             cmbRoomType.SelectedIndex = 0;
             cmbRarity.SelectedIndex = 0;
+            patrolRoutes.Clear();
+            patrolRouteIndices.Clear();
         }
 
         private void radFloor_Checked(object sender, RoutedEventArgs e)
@@ -409,12 +434,45 @@ namespace StaniEdit
 
             FileStream fs = new FileStream(file, FileMode.Create, FileAccess.Write);
 
-                List<MeshDefinition> meshes = new List<MeshDefinition>();
-                meshes.Add(new MeshDefinition() { x = 100.0, y = 100.0, staticMesh = "floor"});
-                RoomDefinition room = new RoomDefinition() { northDoor = false, eastDoor = true, southDoor = false, westDoor = true, meshes = meshes };
+            RoomDefinition room = new RoomDefinition();
+            if (northDoor != null) room.northDoor = true;
+            if (eastDoor != null) room.eastDoor = true;
+            if (southDoor != null) room.southDoor = true;
+            if (westDoor != null) room.westDoor = true;
+            room.roomRarity = cmbRarity.SelectedIndex;
+            room.roomType = cmbRoomType.SelectedIndex;
 
-                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RoomDefinition));
-                serializer.WriteObject(fs, room);
+            //Update the following when spawn groups are implemented:
+            foreach (DraggableGridSnapper d in floorLayer) {
+                SpawnGroupDefinition g = new SpawnGroupDefinition();
+                g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType });
+                room.spawnGroups.Add(g);
+            }
+
+            foreach (DraggableGridSnapper d in wallLayer)
+            {
+                SpawnGroupDefinition g = new SpawnGroupDefinition();
+                g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType });
+                room.spawnGroups.Add(g);
+            }
+
+            foreach (DraggableGridSnapper d in stuffLayer)
+            {
+                SpawnGroupDefinition g = new SpawnGroupDefinition();
+                if (d is Item) {
+                    g.items.Add(new ItemDefinition() { x = d.RealX, y = d.RealY });
+                }
+                else if (d is Guard){
+                    g.guards.Add(new GuardDefinition() { x = d.RealX, y = d.RealY, patrolRouteIndex = ((Guard)d).PatrolRouteIndex, startIndex = ((Guard)d).StartIndex });
+                }
+                else if (d is PatrolPoint) {
+                    g.patrolPoints.Add(new PatrolPointDefinition() { x = d.RealX, y = d.RealY, patrolRouteIndex = ((PatrolPoint)d).PatrolRouteIndex, index = ((PatrolPoint)d).Index });
+                }
+                room.spawnGroups.Add(g);
+            }
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RoomDefinition));
+            serializer.WriteObject(fs, room);
 
                 ////External doors:
                 //if(northDoor != null) writer.Write(1); else writer.Write(0);
@@ -466,6 +524,8 @@ namespace StaniEdit
                 //writer.Write("\n");
             
         }
+
+        
 
 
 

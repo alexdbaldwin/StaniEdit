@@ -13,20 +13,17 @@ namespace StaniEdit
         public Item() {
             realWidth = 100.0;
             realHeight = 100.0;
+            snapMode = SnapMode.TileSnap;
             color = new SolidColorBrush(Colors.Red);
             rect.Fill = color;
             zIndex = 2;
             SetValue(Canvas.ZIndexProperty, zIndex);
         }
 
-        public Item(double width, double height)
+        public Item(double width, double height) : this()
         {
             realWidth = width;
             realHeight = height;
-            color = new SolidColorBrush(Colors.Red);
-            rect.Fill = color;
-            zIndex = 2;
-            SetValue(Canvas.ZIndexProperty, zIndex);
         }
 
     }
