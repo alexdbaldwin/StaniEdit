@@ -456,6 +456,15 @@ namespace StaniEdit
                 room.spawnGroups.Add(g);
             }
 
+            List<PatrolRouteDefinition> patrolRouteDefs = new List<PatrolRouteDefinition>();
+            foreach (var pr in patrolRoutes) {
+                patrolRouteDefs.Add(new PatrolRouteDefinition());
+                foreach (PatrolPoint p in pr) {
+                    patrolRouteDefs[patrolRouteDefs.Count - 1].patrolPoints.Add(new PatrolPointDefinition() { x = p.RealX, y = p.RealY });
+                }
+            }
+            room.patrolRoutes = patrolRouteDefs;
+
             foreach (DraggableGridSnapper d in stuffLayer)
             {
                 SpawnGroupDefinition g = new SpawnGroupDefinition();
@@ -465,63 +474,11 @@ namespace StaniEdit
                 else if (d is Guard){
                     g.guards.Add(new GuardDefinition() { x = d.RealX, y = d.RealY, patrolRouteIndex = ((Guard)d).PatrolRouteIndex, startIndex = ((Guard)d).StartIndex });
                 }
-                else if (d is PatrolPoint) {
-                    g.patrolPoints.Add(new PatrolPointDefinition() { x = d.RealX, y = d.RealY, patrolRouteIndex = ((PatrolPoint)d).PatrolRouteIndex, index = ((PatrolPoint)d).Index });
-                }
                 room.spawnGroups.Add(g);
             }
 
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RoomDefinition));
             serializer.WriteObject(fs, room);
-
-                ////External doors:
-                //if(northDoor != null) writer.Write(1); else writer.Write(0);
-                //if(eastDoor != null) writer.Write(1); else writer.Write(0);
-                //if(southDoor != null) writer.Write(1); else writer.Write(0);
-                //if(westDoor != null) writer.Write(1); else writer.Write(0);
-                //writer.Write("\n");
-
-                ////Floor:
-                //foreach(DraggableGridSnapper f in floorLayer){
-                //    writer.Write(f.getLeftTile() + "," + f.getTopTile() + " ");
-                //}
-                //writer.Write("\n");
-
-                ////Horizontal walls:
-                //foreach (DraggableGridSnapper w in wallLayer) {
-                //    Wall w_ = w as Wall;
-                //    if (w_.Horizontal()) 
-                //        writer.Write(w_.getLeftTile() + "," + w_.getTopTile() + " ");
-                //}
-                //writer.Write("\n");
-
-                ////Vertical walls:
-                //foreach (DraggableGridSnapper w in wallLayer)
-                //{
-                //    Wall w_ = w as Wall;
-                //    if (!w_.Horizontal())
-                //        writer.Write(w_.getLeftTile() + "," + w_.getTopTile() + " ");
-                //}
-                //writer.Write("\n");
-
-                ////Items:
-                //foreach (DraggableGridSnapper s in stuffLayer)
-                //{
-                //    if (s is Item) { 
-                //         writer.Write(s.getLeftTile() + "," + s.getTopTile() + " ");
-                //    }                       
-                //}
-                //writer.Write("\n");
-
-                ////Guards:
-                //foreach (DraggableGridSnapper s in stuffLayer)
-                //{
-                //    if (s is Guard)
-                //    {
-                //        writer.Write(s.getLeftTile() + "," + s.getTopTile() + " ");
-                //    }
-                //}
-                //writer.Write("\n");
             
         }
 

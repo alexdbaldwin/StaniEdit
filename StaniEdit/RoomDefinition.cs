@@ -17,8 +17,6 @@ namespace StaniEdit
         public List<ItemDefinition> items = new List<ItemDefinition>();
         [DataMember]
         public List<GuardDefinition> guards = new List<GuardDefinition>();
-        [DataMember]
-        public List<PatrolPointDefinition> patrolPoints = new List<PatrolPointDefinition>();
     }
 
     [DataContract]
@@ -50,10 +48,6 @@ namespace StaniEdit
         public double x = 0;
         [DataMember]
         public double y = 0;
-        [DataMember]
-        public int patrolRouteIndex = -1;
-        [DataMember]
-        public int index = 0;
     }
 
     [DataContract]
@@ -62,6 +56,13 @@ namespace StaniEdit
         public double x = 0;
         [DataMember]
         public double y = 0;
+    }
+
+    [DataContract]
+    class PatrolRouteDefinition
+    {
+        [DataMember]
+        public List<PatrolPointDefinition> patrolPoints = new List<PatrolPointDefinition>();
     }
 
     [DataContract]
@@ -81,5 +82,7 @@ namespace StaniEdit
         public int roomRarity = 0;
         [DataMember]
         public List<SpawnGroupDefinition> spawnGroups = new List<SpawnGroupDefinition>();
+        [DataMember]
+        public List<PatrolRouteDefinition> patrolRoutes = new List<PatrolRouteDefinition>();
     }
 }
