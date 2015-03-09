@@ -13,8 +13,8 @@ namespace StaniEdit
     class Guard : DraggableGridSnapper
     {
 
-        ComboBox cmbRoutes;
-        ComboBox cmbStart;
+        public ComboBox cmbRoutes;
+        public ComboBox cmbStart;
 
         public int PatrolRouteIndex {
             get { return cmbRoutes.SelectedIndex; }

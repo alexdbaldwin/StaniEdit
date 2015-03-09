@@ -44,10 +44,12 @@ namespace StaniEdit
         public double RealX
         {
             get { return (double)GetValue(Canvas.LeftProperty) / mainWindow.widthRatio; }
+            set { SetValue(Canvas.LeftProperty, value * mainWindow.widthRatio); }
         }
         public double RealY
         {
             get { return (double)GetValue(Canvas.TopProperty) / mainWindow.heightRatio; }
+            set { SetValue(Canvas.TopProperty, value * mainWindow.heightRatio); }
         }
         public string MeshType {
             get { return meshType; }

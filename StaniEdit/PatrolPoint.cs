@@ -13,8 +13,8 @@ namespace StaniEdit
 {
     public class PatrolPoint : DraggableGridSnapper
     {
-        ObservableCollection<PatrolPoint> patrolRoute = null;
-        ComboBox cmbRoutes;
+        public ObservableCollection<PatrolPoint> patrolRoute = null;
+        public ComboBox cmbRoutes;
 
         public string MyText
         {
@@ -38,7 +38,6 @@ namespace StaniEdit
             rect.Fill = color;
             zIndex = 2;
             SetValue(Canvas.ZIndexProperty, zIndex);
-            Name = "Charles";
         }
 
         public override void Init(MainWindow main)

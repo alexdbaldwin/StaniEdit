@@ -251,6 +251,11 @@ namespace StaniEdit
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
+            Clear();
+        }
+
+        private void Clear()
+        {
             selected = null;
             dragging = null;
             canvasRoom.Children.Clear();
@@ -432,11 +437,119 @@ namespace StaniEdit
 
         private void menuLoad_Click(object sender, RoutedEventArgs e)
         {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Room file (*.room)|*.room";
+            if (ofd.ShowDialog() == true)
+            {
+                LoadRoom(ofd.FileName);
+                currentFile = ofd.FileName;
+            }
+
+        }
+
+        private void LoadRoom(string file)
+        {
+            Clear();
+
+            FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RoomDefinition));
+            RoomDefinition room = (RoomDefinition)serializer.ReadObject(fs);
+
+
+            if(room.northDoor) {
+                chkNorth_Checked(this, new RoutedEventArgs());
+                chkNorth.IsChecked = true;
+            }
+            if (room.eastDoor)
+            {
+                chkEast_Checked(this, new RoutedEventArgs());
+                chkEast.IsChecked = true;
+            }
+            if (room.southDoor)
+            {
+                chkSouth_Checked(this, new RoutedEventArgs());
+                chkSouth.IsChecked = true;
+            }
+            if (room.westDoor)
+            {
+                chkWest_Checked(this, new RoutedEventArgs());
+                chkWest.IsChecked = true;
+            }
+
+            foreach (PatrolRouteDefinition prd in room.patrolRoutes) {
+                ObservableCollection<PatrolPoint> pr = new ObservableCollection<PatrolPoint>();
+                patrolRoutes.Add(pr);
+                patrolRouteIndices.Add(patrolRoutes.Count);
+                foreach (PatrolPointDefinition ppd in prd.patrolPoints) {
+                    PatrolPoint pp = new PatrolPoint();
+                    pp.Init(this);
+                    canvasRoom.Children.Add(pp);
+                    stuffLayer.Add(pp);
+                    pp.RealX = ppd.x;
+                    pp.RealY = ppd.y;
+                    pp.cmbRoutes.SelectedIndex = patrolRoutes.Count - 1;
+                }
+            }
+
+
+            foreach (SpawnGroupDefinition sgd in room.spawnGroups) {
+                foreach (MeshDefinition md in sgd.meshes) {
+                    if (md.staticMesh == "floor") {
+                        Floor f = new Floor();
+                        f.Init(this);
+                        canvasRoom.Children.Add(f);
+                        floorLayer.Add(f);
+                        f.RealX = md.x;
+                        f.RealY = md.y;
+                    }
+                    else if (md.staticMesh == "hWall") {
+                        Wall w = new Wall(400.0, 20.0);
+                        w.Init(this);
+                        canvasRoom.Children.Add(w);
+                        wallLayer.Add(w);
+                        w.RealX = md.x;
+                        w.RealY = md.y;
+                    }
+                    else if (md.staticMesh == "vWall") {
+                        Wall w = new Wall(20.0, 400.0);
+                        w.Init(this);
+                        canvasRoom.Children.Add(w);
+                        wallLayer.Add(w);
+                        w.RealX = md.x;
+                        w.RealY = md.y;
+                    }
+                }
+                foreach (ItemDefinition id in sgd.items) {
+                    Item i = new Item();
+                    i.Init(this);
+                    canvasRoom.Children.Add(i);
+                    stuffLayer.Add(i);
+                    i.RealX = id.x;
+                    i.RealY = id.y;
+                }
+                foreach (GuardDefinition gd in sgd.guards)
+                {
+                    Guard g = new Guard();
+                    g.Init(this);
+                    canvasRoom.Children.Add(g);
+                    stuffLayer.Add(g);
+                    g.RealX = gd.x;
+                    g.RealY = gd.y;
+                    g.cmbRoutes.SelectedIndex = gd.patrolRouteIndex;
+                    g.cmbStart.SelectedIndex = gd.startIndex;
+                }
+            }
+
+            fs.Close();
+
+            EnableStuffLayer();
         }
 
         private void SaveRoom(string file) {
 
             FileStream fs = new FileStream(file, FileMode.Create, FileAccess.Write);
+         
 
             RoomDefinition room = new RoomDefinition();
             if (northDoor != null) room.northDoor = true;
@@ -486,6 +599,8 @@ namespace StaniEdit
 
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RoomDefinition));
             serializer.WriteObject(fs, room);
+
+            fs.Close();
             
         }
 
