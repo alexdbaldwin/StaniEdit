@@ -113,5 +113,19 @@ namespace StaniEdit
             rect.Fill = color;
         }
 
+        public void Delete() {
+            patrolRoute.Remove(this);
+            if (patrolRoute.Count == 0) {
+                mainWindow.patrolRoutes.Remove(patrolRoute);
+            }
+            foreach (ObservableCollection<PatrolPoint> o in mainWindow.patrolRoutes)
+            {
+                foreach (PatrolPoint p in o)
+                {
+                    p.UpdateLabel();
+                }
+            }
+        }
+
     }
 }

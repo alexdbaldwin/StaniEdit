@@ -328,6 +328,10 @@ namespace StaniEdit
             if (e.Key == Key.Delete)
             {
                 if (selected != null) {
+                    if (selected is PatrolPoint) {
+                        (selected as PatrolPoint).Delete();
+                    }
+
                     floorLayer.Remove(selected);
                     wallLayer.Remove(selected);
                     stuffLayer.Remove(selected);
@@ -442,40 +446,43 @@ namespace StaniEdit
             room.roomRarity = cmbRarity.SelectedIndex;
             room.roomType = cmbRoomType.SelectedIndex;
 
+            SpawnGroupDefinition g = new SpawnGroupDefinition();
+
             //Update the following when spawn groups are implemented:
             foreach (DraggableGridSnapper d in floorLayer) {
-                SpawnGroupDefinition g = new SpawnGroupDefinition();
+                
                 g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType });
-                room.spawnGroups.Add(g);
             }
 
             foreach (DraggableGridSnapper d in wallLayer)
             {
-                SpawnGroupDefinition g = new SpawnGroupDefinition();
                 g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType });
-                room.spawnGroups.Add(g);
             }
 
-            List<PatrolRouteDefinition> patrolRouteDefs = new List<PatrolRouteDefinition>();
-            foreach (var pr in patrolRoutes) {
-                patrolRouteDefs.Add(new PatrolRouteDefinition());
-                foreach (PatrolPoint p in pr) {
-                    patrolRouteDefs[patrolRouteDefs.Count - 1].patrolPoints.Add(new PatrolPointDefinition() { x = p.RealX, y = p.RealY });
-                }
-            }
-            room.patrolRoutes = patrolRouteDefs;
+
 
             foreach (DraggableGridSnapper d in stuffLayer)
             {
-                SpawnGroupDefinition g = new SpawnGroupDefinition();
                 if (d is Item) {
                     g.items.Add(new ItemDefinition() { x = d.RealX, y = d.RealY });
                 }
                 else if (d is Guard){
                     g.guards.Add(new GuardDefinition() { x = d.RealX, y = d.RealY, patrolRouteIndex = ((Guard)d).PatrolRouteIndex, startIndex = ((Guard)d).StartIndex });
                 }
-                room.spawnGroups.Add(g);
             }
+
+            room.spawnGroups.Add(g);
+
+            List<PatrolRouteDefinition> patrolRouteDefs = new List<PatrolRouteDefinition>();
+            foreach (var pr in patrolRoutes)
+            {
+                patrolRouteDefs.Add(new PatrolRouteDefinition());
+                foreach (PatrolPoint p in pr)
+                {
+                    patrolRouteDefs[patrolRouteDefs.Count - 1].patrolPoints.Add(new PatrolPointDefinition() { x = p.RealX, y = p.RealY });
+                }
+            }
+            room.patrolRoutes = patrolRouteDefs;
 
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RoomDefinition));
             serializer.WriteObject(fs, room);
