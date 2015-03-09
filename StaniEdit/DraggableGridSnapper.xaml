@@ -5,6 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100" >
+    <UserControl.RenderTransform>
+        <RotateTransform Angle="0" CenterX="0" CenterY="0" ></RotateTransform>
+    </UserControl.RenderTransform>
     <UserControl.ContextMenu>
         <ContextMenu Name="contextMenu">
             <StackPanel Orientation="Horizontal">
@@ -28,7 +31,11 @@
         </ContextMenu>  
     </UserControl.ContextMenu>
     <Canvas Name="canvasHolder">
-        <Rectangle Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="3" Width="{Binding Path=ActualWidth, ElementName=canvasHolder}" Height="{Binding Path=ActualHeight, ElementName=canvasHolder}"></Rectangle>
+
+        <Rectangle Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="3" Width="{Binding Path=ActualWidth, ElementName=canvasHolder}" Height="{Binding Path=ActualHeight, ElementName=canvasHolder}">
+            
+        </Rectangle>
+        <Ellipse Fill="Red" Width="10" Height="10" Canvas.Left=" -5" Canvas.Top="-5"></Ellipse>
         <Label Name="lblLabel" Foreground="Black"></Label>
     </Canvas>
     

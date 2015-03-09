@@ -14,6 +14,8 @@ namespace StaniEdit
         public Wall() {
             realWidth = 400.0;
             realHeight = 20.0;
+            originX = 0.0;
+            originY = 10.0;
             meshType = "hWall";
             snapMode = SnapMode.HorizontalLineSnap;
             color = new SolidColorBrush(Colors.Orange);
@@ -30,6 +32,8 @@ namespace StaniEdit
             {
                 meshType = "vWall";
                 snapMode = SnapMode.VerticalLineSnap;
+                originX = width/2.0;
+                originY = 0.0;
             }
 
         }

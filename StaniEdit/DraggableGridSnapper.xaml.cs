@@ -30,6 +30,9 @@ namespace StaniEdit
         protected double realWidth = 400.0;
         protected double realHeight = 400.0;
 
+        protected double originX = 0.0;
+        protected double originY = 0.0;
+
         protected int zIndex = 1;
         protected Brush color = new SolidColorBrush(Colors.Magenta);
 
@@ -59,8 +62,11 @@ namespace StaniEdit
             mainWindow = main;
             Width = main.widthRatio * realWidth;
             Height = main.heightRatio * realHeight;
+            (RenderTransform as RotateTransform).CenterX = originX * main.widthRatio;
+            (RenderTransform as RotateTransform).CenterY = originY * main.heightRatio;
             SetValue(Canvas.LeftProperty, 0.0);
             SetValue(Canvas.TopProperty, 0.0);
+
         }
 
         public void Select() {
@@ -95,8 +101,11 @@ namespace StaniEdit
                 mainWindow.Select(this);
                 dragging = true;
 
-                FirstXPos = e.GetPosition(this).X;
-                FirstYPos = e.GetPosition(this).Y;
+                GeneralTransform t = RenderTransform;
+                Point first = t.Transform(e.GetPosition(this));
+
+                FirstXPos = first.X;// e.GetPosition(this).X;
+                FirstYPos = first.Y;// e.GetPosition(this).Y;
                 FirstArrowXPos = e.GetPosition(Parent as Control).X - FirstXPos;
                 FirstArrowYPos = e.GetPosition(Parent as Control).Y - FirstYPos;
                 e.Handled = true;
@@ -117,6 +126,9 @@ namespace StaniEdit
 
             if (dragging)
             {
+
+                GeneralTransform t = RenderTransform;
+                Rect transformedBounds = t.TransformBounds(new Rect(0, 0, Width, Height));
 
                 SetValue(Canvas.LeftProperty,
                      e.GetPosition(Parent as FrameworkElement).X - FirstXPos);
@@ -147,7 +159,7 @@ namespace StaniEdit
             
         }
 
-        protected virtual void SnapToGrid() {
+        public virtual void SnapToGrid() {
 
             
 
@@ -175,46 +187,55 @@ namespace StaniEdit
         }
 
         private void TileSnap() {
-            SetValue(Canvas.LeftProperty, (int)((double)GetValue(Canvas.LeftProperty) / mainWindow.tileWidth) * mainWindow.tileWidth);
-            SetValue(Canvas.TopProperty, (int)((double)GetValue(Canvas.TopProperty) / mainWindow.tileHeight) * mainWindow.tileHeight);
+            GeneralTransform t = RenderTransform;
+            Rect transformedBounds = t.TransformBounds(new Rect(0, 0, Width, Height));
 
-            if ((double)GetValue(Canvas.LeftProperty) < 0)
-                SetValue(Canvas.LeftProperty, 0.0);
-            if ((double)GetValue(Canvas.LeftProperty) + Width > (Parent as Canvas).Width)
-                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - Width);
-            if ((double)GetValue(Canvas.TopProperty) < 0)
-                SetValue(Canvas.TopProperty, 0.0);
-            if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
-                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
+            SetValue(Canvas.LeftProperty, Math.Round(((double)GetValue(Canvas.LeftProperty) + transformedBounds.X) / mainWindow.tileWidth) * mainWindow.tileWidth - transformedBounds.X);
+            SetValue(Canvas.TopProperty, Math.Round(((double)GetValue(Canvas.TopProperty) + transformedBounds.Y) / mainWindow.tileHeight) * mainWindow.tileHeight - transformedBounds.Y);
+
+            if ((double)GetValue(Canvas.LeftProperty) + transformedBounds.X < 0)
+                SetValue(Canvas.LeftProperty, -transformedBounds.X);
+            if ((double)GetValue(Canvas.LeftProperty) + transformedBounds.X + transformedBounds.Width > (Parent as Canvas).Width)
+                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - transformedBounds.Width - transformedBounds.X);
+            if ((double)GetValue(Canvas.TopProperty) + transformedBounds.Y < 0)
+                SetValue(Canvas.TopProperty, -transformedBounds.Y);
+            if ((double)GetValue(Canvas.TopProperty) + transformedBounds.Y + transformedBounds.Height > (Parent as Canvas).Height)
+                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - transformedBounds.Height - transformedBounds.Y);
         }
 
         private void HorizontalLineSnap() {
-            SetValue(Canvas.LeftProperty, (int)((double)GetValue(Canvas.LeftProperty) / mainWindow.tileWidth) * mainWindow.tileWidth);
-            SetValue(Canvas.TopProperty, Math.Round((double)GetValue(Canvas.TopProperty) / mainWindow.tileHeight) * mainWindow.tileHeight - Height/2);
+            GeneralTransform t = RenderTransform;
+            Rect transformedBounds = t.TransformBounds(new Rect(0, 0, Width, Height));
 
-            if ((double)GetValue(Canvas.LeftProperty) < 0)
-                SetValue(Canvas.LeftProperty, 0.0);
-            if ((double)GetValue(Canvas.LeftProperty) + Width > (Parent as Canvas).Width)
-                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - Width);
-            if ((double)GetValue(Canvas.TopProperty) < 0)
-                SetValue(Canvas.TopProperty, 0.0);
-            if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
-                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
+            SetValue(Canvas.LeftProperty, Math.Round(((double)GetValue(Canvas.LeftProperty) + transformedBounds.X) / mainWindow.tileWidth) * mainWindow.tileWidth - transformedBounds.X);
+            SetValue(Canvas.TopProperty, Math.Round(((double)GetValue(Canvas.TopProperty) + transformedBounds.Y) / mainWindow.tileHeight) * mainWindow.tileHeight - transformedBounds.Height / 2 - transformedBounds.Y);
+
+
+            if ((double)GetValue(Canvas.LeftProperty) + transformedBounds.X < 0)
+                SetValue(Canvas.LeftProperty, -transformedBounds.X);
+            if ((double)GetValue(Canvas.LeftProperty) + transformedBounds.X + transformedBounds.Width > (Parent as Canvas).Width)
+                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - transformedBounds.Width - transformedBounds.X);
+            if ((double)GetValue(Canvas.TopProperty) + transformedBounds.Y < 0)
+                SetValue(Canvas.TopProperty, -transformedBounds.Y);
+            if ((double)GetValue(Canvas.TopProperty) + transformedBounds.Y + transformedBounds.Height > (Parent as Canvas).Height)
+                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - transformedBounds.Height - transformedBounds.Y);
         }
 
         private void VerticalLineSnap() {
+            GeneralTransform t = RenderTransform;
+            Rect transformedBounds = t.TransformBounds(new Rect(0, 0, Width, Height));
 
-            SetValue(Canvas.LeftProperty, Math.Round((double)GetValue(Canvas.LeftProperty) / mainWindow.tileWidth) * mainWindow.tileWidth - Width/2);
-            SetValue(Canvas.TopProperty, (int)((double)GetValue(Canvas.TopProperty) / mainWindow.tileHeight) * mainWindow.tileHeight);
+            SetValue(Canvas.LeftProperty, Math.Round(((double)GetValue(Canvas.LeftProperty) + transformedBounds.X) / mainWindow.tileWidth) * mainWindow.tileWidth - transformedBounds.Width / 2 - transformedBounds.X);
+            SetValue(Canvas.TopProperty, Math.Round(((double)GetValue(Canvas.TopProperty) + transformedBounds.Y) / mainWindow.tileHeight) * mainWindow.tileHeight - transformedBounds.Y);
 
-            if ((double)GetValue(Canvas.LeftProperty) < 0)
-                SetValue(Canvas.LeftProperty, 0.0);
-            if ((double)GetValue(Canvas.LeftProperty) + Width > (Parent as Canvas).Width)
-                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - Width);
-            if ((double)GetValue(Canvas.TopProperty) < 0)
-                SetValue(Canvas.TopProperty, 0.0);
-            if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
-                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
+            if ((double)GetValue(Canvas.LeftProperty) + transformedBounds.X < 0)
+                SetValue(Canvas.LeftProperty, -transformedBounds.X);
+            if ((double)GetValue(Canvas.LeftProperty) + transformedBounds.X + transformedBounds.Width > (Parent as Canvas).Width)
+                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - transformedBounds.Width - transformedBounds.X);
+            if ((double)GetValue(Canvas.TopProperty) + transformedBounds.Y < 0)
+                SetValue(Canvas.TopProperty, -transformedBounds.Y);
+            if ((double)GetValue(Canvas.TopProperty) + transformedBounds.Y + transformedBounds.Height > (Parent as Canvas).Height)
+                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - transformedBounds.Height - transformedBounds.Y);
         }
 
         private void CornerSnap() {
@@ -222,25 +243,27 @@ namespace StaniEdit
 
             if ((double)GetValue(Canvas.LeftProperty) < 0)
                 SetValue(Canvas.LeftProperty, 0.0);
-            if ((double)GetValue(Canvas.LeftProperty) + Width > (Parent as Canvas).Width)
-                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - Width);
+            if ((double)GetValue(Canvas.LeftProperty) + rect.Width > (Parent as Canvas).Width)
+                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - rect.Width);
             if ((double)GetValue(Canvas.TopProperty) < 0)
                 SetValue(Canvas.TopProperty, 0.0);
-            if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
-                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
+            if ((double)GetValue(Canvas.TopProperty) + rect.Height > (Parent as Canvas).Height)
+                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - rect.Height);
         }
 
         private void FreeSnap() {
             //Do not snap, just limit to grid bounds
+            GeneralTransform t = RenderTransform;
+            Rect transformedBounds = t.TransformBounds(new Rect(0, 0, Width, Height));
 
-            if ((double)GetValue(Canvas.LeftProperty) < 0)
-                SetValue(Canvas.LeftProperty, 0.0);
-            if ((double)GetValue(Canvas.LeftProperty) + Width > (Parent as Canvas).Width)
-                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - Width);
-            if ((double)GetValue(Canvas.TopProperty) < 0)
-                SetValue(Canvas.TopProperty, 0.0);
-            if ((double)GetValue(Canvas.TopProperty) + Height > (Parent as Canvas).Height)
-                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - Height);
+            if ((double)GetValue(Canvas.LeftProperty) + transformedBounds.X < 0)
+                SetValue(Canvas.LeftProperty, -transformedBounds.X);
+            if ((double)GetValue(Canvas.LeftProperty) + transformedBounds.X + transformedBounds.Width > (Parent as Canvas).Width)
+                SetValue(Canvas.LeftProperty, (Parent as Canvas).Width - transformedBounds.Width - transformedBounds.X);
+            if ((double)GetValue(Canvas.TopProperty) + transformedBounds.Y < 0)
+                SetValue(Canvas.TopProperty, -transformedBounds.Y);
+            if ((double)GetValue(Canvas.TopProperty) + transformedBounds.Y + transformedBounds.Height > (Parent as Canvas).Height)
+                SetValue(Canvas.TopProperty, (Parent as Canvas).Height - transformedBounds.Height - transformedBounds.Y);
         }
 
        

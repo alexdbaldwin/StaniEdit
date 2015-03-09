@@ -344,6 +344,18 @@ namespace StaniEdit
                     selected = null;
                 }
             }
+            if (e.Key == Key.R)
+            {
+                if (selected != null) {
+                    (selected.RenderTransform as RotateTransform).Angle += 90.0;
+                    if (selected.snapMode == DraggableGridSnapper.SnapMode.HorizontalLineSnap)
+                        selected.snapMode = DraggableGridSnapper.SnapMode.VerticalLineSnap;
+                    else if (selected.snapMode == DraggableGridSnapper.SnapMode.VerticalLineSnap)
+                        selected.snapMode = DraggableGridSnapper.SnapMode.HorizontalLineSnap;
+                    selected.SnapToGrid();
+
+                }
+            }
         }
 
         private void chkNorth_Checked(object sender, RoutedEventArgs e)
