@@ -30,8 +30,37 @@ namespace StaniEdit
         protected double realWidth = 400.0;
         protected double realHeight = 400.0;
 
-        protected double originX = 0.0;
-        protected double originY = 0.0;
+        public double originX = 0.0;
+        public double originY = 0.0;
+
+        public double WorldOriginX {
+            get {
+                GeneralTransform t = RenderTransform;
+                Point transformedOrigin = t.Transform(new Point(originX*mainWindow.widthRatio, originY*mainWindow.heightRatio));
+                return RealX + transformedOrigin.X / mainWindow.widthRatio;
+            }
+            set {
+                GeneralTransform t = RenderTransform;
+                Point transformedOrigin = t.Transform(new Point(originX * mainWindow.widthRatio, originY * mainWindow.heightRatio));
+                RealX = value - transformedOrigin.X / mainWindow.widthRatio;
+            }
+        }
+
+        public double WorldOriginY
+        {
+            get
+            {
+                GeneralTransform t = RenderTransform;
+                Point transformedOrigin = t.Transform(new Point(originX * mainWindow.widthRatio, originY * mainWindow.heightRatio));
+                return RealY + transformedOrigin.Y / mainWindow.heightRatio;
+            }
+            set
+            {
+                GeneralTransform t = RenderTransform;
+                Point transformedOrigin = t.Transform(new Point(originX * mainWindow.widthRatio, originY * mainWindow.heightRatio));
+                RealY = value - transformedOrigin.Y / mainWindow.heightRatio;
+            }
+        }
 
         protected int zIndex = 1;
         protected Brush color = new SolidColorBrush(Colors.Magenta);

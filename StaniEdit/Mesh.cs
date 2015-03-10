@@ -26,6 +26,8 @@ namespace StaniEdit
             this.zIndex = zIndex;
             SetValue(Canvas.ZIndexProperty, this.zIndex);
             Angle = angle;
+            this.originX = originX;
+            this.originY = originY;
         }
     }
 }

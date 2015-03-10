@@ -498,8 +498,8 @@ namespace StaniEdit
                     pp.Init(this);
                     canvasRoom.Children.Add(pp);
                     stuffLayer.Add(pp);
-                    pp.RealX = ppd.x;
-                    pp.RealY = ppd.y;
+                    pp.WorldOriginX = ppd.x;
+                    pp.WorldOriginY = ppd.y;
                     pp.cmbRoutes.SelectedIndex = patrolRoutes.Count - 1;
                 }
             }
@@ -512,8 +512,8 @@ namespace StaniEdit
                         f.Init(this);
                         canvasRoom.Children.Add(f);
                         floorLayer.Add(f);
-                        f.RealX = md.x;
-                        f.RealY = md.y;
+                        f.WorldOriginX = md.x;
+                        f.WorldOriginY = md.y;
                         f.Angle = md.rotation;
                     }
                     else if (md.staticMesh == "wall") {
@@ -521,8 +521,8 @@ namespace StaniEdit
                         w.Init(this);
                         canvasRoom.Children.Add(w);
                         wallLayer.Add(w);
-                        w.RealX = md.x;
-                        w.RealY = md.y;
+                        w.WorldOriginX = md.x;
+                        w.WorldOriginY = md.y;
                         w.Angle = md.rotation;
                         if (w.Angle != 0.0) {
                             w.snapMode = DraggableGridSnapper.SnapMode.VerticalLineSnap;
@@ -534,8 +534,8 @@ namespace StaniEdit
                     i.Init(this);
                     canvasRoom.Children.Add(i);
                     stuffLayer.Add(i);
-                    i.RealX = id.x;
-                    i.RealY = id.y;
+                    i.WorldOriginX = id.x;
+                    i.WorldOriginY = id.y;
                 }
                 foreach (GuardDefinition gd in sgd.guards)
                 {
@@ -543,8 +543,8 @@ namespace StaniEdit
                     g.Init(this);
                     canvasRoom.Children.Add(g);
                     stuffLayer.Add(g);
-                    g.RealX = gd.x;
-                    g.RealY = gd.y;
+                    g.WorldOriginX = gd.x;
+                    g.WorldOriginY = gd.y;
                     g.cmbRoutes.SelectedIndex = gd.patrolRouteIndex;
                     g.cmbStart.SelectedIndex = gd.startIndex;
                 }
@@ -572,13 +572,12 @@ namespace StaniEdit
 
             //Update the following when spawn groups are implemented:
             foreach (Mesh d in floorLayer) {
-                
-                g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType, rotation = d.Angle });
+                g.meshes.Add(new MeshDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, staticMesh = d.MeshType, rotation = d.Angle });
             }
 
             foreach (Mesh d in wallLayer)
             {
-                g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType, rotation = d.Angle });
+                g.meshes.Add(new MeshDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, staticMesh = d.MeshType, rotation = d.Angle });
             }
 
 
@@ -586,10 +585,10 @@ namespace StaniEdit
             foreach (DraggableGridSnapper d in stuffLayer)
             {
                 if (d is Item) {
-                    g.items.Add(new ItemDefinition() { x = d.RealX, y = d.RealY });
+                    g.items.Add(new ItemDefinition() { x = d.WorldOriginX, y = d.WorldOriginY });
                 }
                 else if (d is Guard){
-                    g.guards.Add(new GuardDefinition() { x = d.RealX, y = d.RealY, patrolRouteIndex = ((Guard)d).PatrolRouteIndex, startIndex = ((Guard)d).StartIndex });
+                    g.guards.Add(new GuardDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, patrolRouteIndex = ((Guard)d).PatrolRouteIndex, startIndex = ((Guard)d).StartIndex });
                 }
             }
 
@@ -601,7 +600,7 @@ namespace StaniEdit
                 patrolRouteDefs.Add(new PatrolRouteDefinition());
                 foreach (PatrolPoint p in pr)
                 {
-                    patrolRouteDefs[patrolRouteDefs.Count - 1].patrolPoints.Add(new PatrolPointDefinition() { x = p.RealX, y = p.RealY });
+                    patrolRouteDefs[patrolRouteDefs.Count - 1].patrolPoints.Add(new PatrolPointDefinition() { x = p.WorldOriginX, y = p.WorldOriginY });
                 }
             }
             room.patrolRoutes = patrolRouteDefs;
