@@ -50,7 +50,7 @@ namespace StaniEdit
 
         private string currentFile = "";
 
-        private DoorWall northDoor = null, eastDoor = null, southDoor = null, westDoor = null;
+        private Mesh northDoor = null, eastDoor = null, southDoor = null, westDoor = null;
 
         public MainWindow()
         {
@@ -148,8 +148,7 @@ namespace StaniEdit
 
         private void btnFloor_Click(object sender, RoutedEventArgs e)
         {
-            Floor f = new Floor();
-            f.Init(this);
+            Mesh f = MeshFactory.MakeFloor(this);
             canvasRoom.Children.Add(f);
             floorLayer.Add(f);
             if (!(bool)radFloor.IsChecked)
@@ -161,11 +160,12 @@ namespace StaniEdit
                 selected.Deselect();
             selected = f;
             f.Select();
+            f.SnapToGrid();
         }
 
         private void btnWallH_Click(object sender, RoutedEventArgs e)
         {
-            Wall w = new Wall(400.0, 20.0);
+            Mesh w = MeshFactory.MakeHorizontalWall(this);
             w.Init(this);
             canvasRoom.Children.Add(w);
             wallLayer.Add(w);
@@ -178,11 +178,12 @@ namespace StaniEdit
                 selected.Deselect();
             selected = w;
             w.Select();
+            w.SnapToGrid();
         }
 
         private void btnWallV_Click(object sender, RoutedEventArgs e)
         {
-            Wall w = new Wall(20.0, 400.0);
+            Mesh w = MeshFactory.MakeVerticalWall(this);
             w.Init(this);
             canvasRoom.Children.Add(w);
             wallLayer.Add(w);
@@ -195,7 +196,7 @@ namespace StaniEdit
                 selected.Deselect();
             selected = w;
             w.Select();
-            
+            w.SnapToGrid();
 
         }
 
@@ -213,6 +214,7 @@ namespace StaniEdit
                 selected.Deselect();
             selected = g;
             g.Select();
+            g.SnapToGrid();
         }
 
         private void btnItem_Click(object sender, RoutedEventArgs e)
@@ -230,6 +232,7 @@ namespace StaniEdit
                 selected.Deselect();
             selected = i;
             i.Select();
+            i.SnapToGrid();
         }
 
         private void btnPatrolPoint_Click(object sender, RoutedEventArgs e)
@@ -247,6 +250,7 @@ namespace StaniEdit
                 selected.Deselect();
             selected = pp;
             pp.Select();
+            pp.SnapToGrid();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -360,8 +364,7 @@ namespace StaniEdit
 
         private void chkNorth_Checked(object sender, RoutedEventArgs e)
         {
-            northDoor = new DoorWall(400.0, 20.0);
-            northDoor.Init(this);
+            northDoor = MeshFactory.MakeHorizontalDoorWall(this);
             canvasRoom.Children.Add(northDoor);
             northDoor.SetValue(Canvas.LeftProperty, 400.0 * widthRatio);
             northDoor.SetValue(Canvas.TopProperty, 0.0);
@@ -370,17 +373,15 @@ namespace StaniEdit
 
         private void chkEast_Checked(object sender, RoutedEventArgs e)
         {
-            eastDoor = new DoorWall(20.0, 400.0);
-            eastDoor.Init(this);
+            eastDoor = MeshFactory.MakeVerticalDoorWall(this);
             canvasRoom.Children.Add(eastDoor);
-            eastDoor.SetValue(Canvas.LeftProperty, canvasRoom.Width - eastDoor.Width);
+            eastDoor.SetValue(Canvas.LeftProperty, canvasRoom.Width);
             eastDoor.SetValue(Canvas.TopProperty, 400.0 * heightRatio);
         }
 
         private void chkSouth_Checked(object sender, RoutedEventArgs e)
         {
-            southDoor = new DoorWall(400.0, 20.0);
-            southDoor.Init(this);
+            southDoor = MeshFactory.MakeHorizontalDoorWall(this);
             canvasRoom.Children.Add(southDoor);
             southDoor.SetValue(Canvas.LeftProperty, 400.0 * widthRatio);
             southDoor.SetValue(Canvas.TopProperty, canvasRoom.Height - southDoor.Height);
@@ -388,8 +389,7 @@ namespace StaniEdit
 
         private void chkWest_Checked(object sender, RoutedEventArgs e)
         {
-            westDoor = new DoorWall(20.0, 400.0);
-            westDoor.Init(this);
+            westDoor = MeshFactory.MakeVerticalDoorWall(this);
             canvasRoom.Children.Add(westDoor);
             westDoor.SetValue(Canvas.LeftProperty, 0.0);
             westDoor.SetValue(Canvas.TopProperty, 400.0 * heightRatio);
@@ -508,28 +508,25 @@ namespace StaniEdit
             foreach (SpawnGroupDefinition sgd in room.spawnGroups) {
                 foreach (MeshDefinition md in sgd.meshes) {
                     if (md.staticMesh == "floor") {
-                        Floor f = new Floor();
+                        Mesh f = MeshFactory.MakeFloor(this);
                         f.Init(this);
                         canvasRoom.Children.Add(f);
                         floorLayer.Add(f);
                         f.RealX = md.x;
                         f.RealY = md.y;
+                        f.Angle = md.rotation;
                     }
-                    else if (md.staticMesh == "hWall") {
-                        Wall w = new Wall(400.0, 20.0);
+                    else if (md.staticMesh == "wall") {
+                        Mesh w = MeshFactory.MakeHorizontalWall(this);
                         w.Init(this);
                         canvasRoom.Children.Add(w);
                         wallLayer.Add(w);
                         w.RealX = md.x;
                         w.RealY = md.y;
-                    }
-                    else if (md.staticMesh == "vWall") {
-                        Wall w = new Wall(20.0, 400.0);
-                        w.Init(this);
-                        canvasRoom.Children.Add(w);
-                        wallLayer.Add(w);
-                        w.RealX = md.x;
-                        w.RealY = md.y;
+                        w.Angle = md.rotation;
+                        if (w.Angle != 0.0) {
+                            w.snapMode = DraggableGridSnapper.SnapMode.VerticalLineSnap;
+                        }
                     }
                 }
                 foreach (ItemDefinition id in sgd.items) {
@@ -574,14 +571,14 @@ namespace StaniEdit
             SpawnGroupDefinition g = new SpawnGroupDefinition();
 
             //Update the following when spawn groups are implemented:
-            foreach (DraggableGridSnapper d in floorLayer) {
+            foreach (Mesh d in floorLayer) {
                 
-                g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType });
+                g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType, rotation = d.Angle });
             }
 
-            foreach (DraggableGridSnapper d in wallLayer)
+            foreach (Mesh d in wallLayer)
             {
-                g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType });
+                g.meshes.Add(new MeshDefinition() { x = d.RealX, y = d.RealY, staticMesh = d.MeshType, rotation = d.Angle });
             }
 
 

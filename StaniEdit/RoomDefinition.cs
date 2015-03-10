@@ -22,9 +22,11 @@ namespace StaniEdit
     [DataContract]
     class MeshDefinition {
         [DataMember]
-        public double x = 0;
+        public double x = 0.0;
         [DataMember]
-        public double y = 0;
+        public double y = 0.0;
+        [DataMember]
+        public double rotation = 0.0;
         [DataMember]
         public String staticMesh;
     }

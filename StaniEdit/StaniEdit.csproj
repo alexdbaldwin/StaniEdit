@@ -60,12 +60,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DoorWall.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="Mesh.cs" />
+    <Compile Include="MeshFactory.cs" />
     <Compile Include="PatrolPoint.cs" />
     <Compile Include="RoomDefinition.cs" />
-    <Compile Include="Wall.cs" />
     <Page Include="DraggableGridSnapper.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -81,7 +81,6 @@
     <Compile Include="DraggableGridSnapper.xaml.cs">
       <DependentUpon>DraggableGridSnapper.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Floor.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
