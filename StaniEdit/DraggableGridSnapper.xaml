@@ -35,7 +35,6 @@
         <Rectangle Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="3" Width="{Binding Path=ActualWidth, ElementName=canvasHolder}" Height="{Binding Path=ActualHeight, ElementName=canvasHolder}">
             
         </Rectangle>
-        <Ellipse Fill="Red" Width="10" Height="10" Canvas.Left=" -5" Canvas.Top="-5"></Ellipse>
         <Label Name="lblLabel" Foreground="Black"></Label>
     </Canvas>
     
