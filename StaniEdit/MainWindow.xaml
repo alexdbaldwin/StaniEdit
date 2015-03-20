@@ -33,6 +33,7 @@
                         <Button Name="btnGuard" Content="Guard" Height="30"  Margin="5,5,5,5" Click="btnGuard_Click"/>
                         <Button Name="btnItem" Content="Item" Height="30"  Margin="5,5,5,5" Click="btnItem_Click"/>
                         <Button Name="btnPatrolPoint" Content="Patrol Point" Height="30"  Margin="5,5,5,5" Click="btnPatrolPoint_Click"/>
+                        <Button Name="btnCamera" Content="Camera" Height="30"  Margin="5,5,5,5" Click="btnCamera_Click"/>
                     </StackPanel>
                 </Grid>
                 <Button Name="btnClear" Height="30"  Margin="5,5,5,5" Content="Clear" Click="btnClear_Click"></Button>

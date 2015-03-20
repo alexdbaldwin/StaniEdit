@@ -17,6 +17,8 @@ namespace StaniEdit
         public List<ItemDefinition> items = new List<ItemDefinition>();
         [DataMember]
         public List<GuardDefinition> guards = new List<GuardDefinition>();
+        [DataMember]
+        public List<CameraDefinition> cameras = new List<CameraDefinition>();
     }
 
     [DataContract]
@@ -42,6 +44,17 @@ namespace StaniEdit
         public int patrolRouteIndex = -1;
         [DataMember]
         public int startIndex = 0;
+    }
+
+    [DataContract]
+    class CameraDefinition
+    {
+        [DataMember]
+        public double x = 0;
+        [DataMember]
+        public double y = 0;
+        [DataMember]
+        public double rotation = 0.0;
     }
 
     [DataContract]

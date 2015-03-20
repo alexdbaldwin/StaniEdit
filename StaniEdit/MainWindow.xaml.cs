@@ -217,6 +217,24 @@ namespace StaniEdit
             g.SnapToGrid();
         }
 
+        private void btnCamera_Click(object sender, RoutedEventArgs e)
+        {
+            Camera g = new Camera();
+            g.Init(this);
+            canvasRoom.Children.Add(g);
+            stuffLayer.Add(g);
+            if (!(bool)radStuff.IsChecked)
+            {
+                EnableStuffLayer();
+                radStuff.IsChecked = true;
+            }
+            if (selected != null)
+                selected.Deselect();
+            selected = g;
+            g.Select();
+            g.SnapToGrid();
+        }
+
         private void btnItem_Click(object sender, RoutedEventArgs e)
         {
             Item i = new Item();
@@ -589,6 +607,10 @@ namespace StaniEdit
                 }
                 else if (d is Guard){
                     g.guards.Add(new GuardDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, patrolRouteIndex = ((Guard)d).PatrolRouteIndex, startIndex = ((Guard)d).StartIndex });
+                }
+                else if (d is Camera)
+                {
+                    g.cameras.Add(new CameraDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, rotation = d.Angle });
                 }
             }
 

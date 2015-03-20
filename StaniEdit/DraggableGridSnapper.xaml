@@ -35,6 +35,17 @@
         <Rectangle Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="3" Width="{Binding Path=ActualWidth, ElementName=canvasHolder}" Height="{Binding Path=ActualHeight, ElementName=canvasHolder}">
             
         </Rectangle>
+        <Polygon Panel.ZIndex="10" Name="dir" Fill="Red" Width="10" Canvas.Right="-10">
+            <Polygon.Points>
+                <Point  X="0" Y="0"></Point>
+                <Point X="10" Y="0.5"></Point>
+                <Point X="0" Y="1"></Point>
+            </Polygon.Points>
+            <Polygon.RenderTransform>
+                <ScaleTransform CenterX="0" CenterY="0" ScaleY="{Binding Path=ActualHeight, ElementName=canvasHolder}"></ScaleTransform>
+            </Polygon.RenderTransform>
+
+        </Polygon>
         <Label Name="lblLabel" Foreground="Black"></Label>
     </Canvas>
     
