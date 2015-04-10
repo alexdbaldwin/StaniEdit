@@ -71,7 +71,9 @@
 
                     </ComboBox>
                 </Grid>
-
+                <ComboBox Name="cmbObjects" Margin="5,5,5,5" SelectionChanged="cmbObjects_SelectionChanged"></ComboBox>
+                <Button Name="btnCreateStaticObject" Content="Create selected object" Margin="5,5,5,5" Click="btnCreateStaticObject_Click"></Button>
+                <Button Name="btnAddNewStaticObject" Content="Add new static object" Margin="5,5,5,5" Click="btnAddNewStaticObject_Click"></Button>
 
             </StackPanel>
 

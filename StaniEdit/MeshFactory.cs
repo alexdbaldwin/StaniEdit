@@ -46,5 +46,11 @@ namespace StaniEdit
             return m;
         }
 
+        public static Mesh MakeCustomMesh(CustomMesh custom, MainWindow main) {
+            Mesh m = new Mesh(custom.assetName, custom.width, custom.height, custom.originX, custom.originY, custom.startRotation, DraggableGridSnapper.SnapMode.TileSnap, Colors.Magenta, 5);
+            m.Init(main);
+            return m;
+        }
+
     }
 }

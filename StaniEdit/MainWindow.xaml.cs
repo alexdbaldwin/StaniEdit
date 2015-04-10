@@ -61,6 +61,8 @@ namespace StaniEdit
             widthRatio = canvasRoom.Width / realWidth;
             heightRatio = canvasRoom.Height / realHeight;
 
+            LoadCustomObjects();
+
         }
 
         private void RedrawGrid(int x, int y) {
@@ -534,7 +536,8 @@ namespace StaniEdit
                         f.WorldOriginY = md.y;
                         f.Angle = md.rotation;
                     }
-                    else if (md.staticMesh == "wall") {
+                    else if (md.staticMesh == "wall")
+                    {
                         Mesh w = MeshFactory.MakeHorizontalWall(this);
                         w.Init(this);
                         canvasRoom.Children.Add(w);
@@ -542,9 +545,25 @@ namespace StaniEdit
                         w.WorldOriginX = md.x;
                         w.WorldOriginY = md.y;
                         w.Angle = md.rotation;
-                        if (w.Angle != 0.0) {
+                        if (w.Angle != 0.0)
+                        {
                             w.snapMode = DraggableGridSnapper.SnapMode.VerticalLineSnap;
+
                         }
+                    }
+                    else {
+                        foreach(CustomMesh cm in cmbObjects.Items){
+                            if(cm.assetName == md.staticMesh){
+                                Mesh m = MeshFactory.MakeCustomMesh(cm, this);
+                                canvasRoom.Children.Add(m);
+                                stuffLayer.Add(m);
+                                m.WorldOriginX = md.x;
+                                m.WorldOriginY = md.y;
+                                m.Angle = md.rotation;
+                                break;
+                            }
+                        }
+                        
                     }
                 }
                 foreach (ItemDefinition id in sgd.items) {
@@ -598,6 +617,11 @@ namespace StaniEdit
                 g.meshes.Add(new MeshDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, staticMesh = d.MeshType, rotation = d.Angle });
             }
 
+            foreach (Mesh d in stuffLayer)
+            {
+                g.meshes.Add(new MeshDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, staticMesh = d.MeshType, rotation = d.Angle });
+            }
+
 
 
             foreach (DraggableGridSnapper d in stuffLayer)
@@ -632,6 +656,78 @@ namespace StaniEdit
 
             fs.Close();
             
+        }
+
+        private void cmbObjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void btnCreateStaticObject_Click(object sender, RoutedEventArgs e)
+        {
+            if (cmbObjects.SelectedItem == null) return;
+
+            Mesh obj = MeshFactory.MakeCustomMesh((CustomMesh)cmbObjects.SelectedItem,this);
+            canvasRoom.Children.Add(obj);
+            stuffLayer.Add(obj);
+            if (!(bool)radStuff.IsChecked)
+            {
+                EnableStuffLayer();
+                radStuff.IsChecked = true;
+            }
+            if (selected != null)
+                selected.Deselect();
+            selected = obj;
+            obj.Select();
+            obj.SnapToGrid();
+        }
+
+        private void btnAddNewStaticObject_Click(object sender, RoutedEventArgs e)
+        {
+            Window1 dialog = new Window1();
+            dialog.ShowDialog();
+            if(!dialog.cancelled){
+                CustomMesh cm = new CustomMesh(dialog.width, dialog.height, dialog.originX, dialog.originY, dialog.startRotation, dialog.assetName);
+                cmbObjects.Items.Add(cm);
+                
+
+                SaveCustomObjects();
+            }
+        }
+
+        private void SaveCustomObjects() {
+
+            FileStream fs = new FileStream("customobjects.json", FileMode.Create, FileAccess.Write);
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<CustomMesh>));
+
+            List<CustomMesh> customMeshes = new List<CustomMesh>();
+            foreach (CustomMesh cm in cmbObjects.Items) {
+                customMeshes.Add(cm);
+            }
+            serializer.WriteObject(fs, customMeshes);
+
+            fs.Close();
+        }
+
+        private void LoadCustomObjects() {
+            FileStream fs;
+            try
+            {
+                fs = new FileStream("customobjects.json", FileMode.Open, FileAccess.Read);
+            }
+            catch (FileNotFoundException)
+            {
+                return;
+            }
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<CustomMesh>));
+
+            List<CustomMesh> cm = (List<CustomMesh>)serializer.ReadObject(fs);
+            foreach(CustomMesh c in cm)
+                cmbObjects.Items.Add(c);
+
+            fs.Close();
         }
 
         
