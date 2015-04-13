@@ -26,7 +26,7 @@ namespace StaniEdit
         public double originY = 0.0;
         public double startRotation = 0.0;
         public string assetName = "";
-
+        public bool lineSnap = false;
 
         public Window1()
         {
@@ -41,6 +41,7 @@ namespace StaniEdit
             originY = Double.Parse(txtOriginY.Text);
             startRotation = Double.Parse((String)((ComboBoxItem)cmbStartRotation.SelectedItem).Content);
             assetName = txtName.Text;
+            lineSnap = (bool)chkLineSnap.IsChecked;
 
             cancelled = false;
             Hide();

@@ -64,6 +64,7 @@
     <Compile Include="CustomMesh.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="Light.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshFactory.cs" />
     <Compile Include="PatrolPoint.cs" />

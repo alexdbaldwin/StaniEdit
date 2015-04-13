@@ -30,8 +30,8 @@ namespace StaniEdit
         public int gridY = 36;
         public double tileWidth, tileHeight;
 
-        public double realWidth = 1200.0;
-        public double realHeight = 1200.0;
+        public double realWidth = 2000.0;
+        public double realHeight = 2000.0;
 
         public double widthRatio = 1.0;
         public double heightRatio = 1.0;
@@ -39,6 +39,7 @@ namespace StaniEdit
         private List<DraggableGridSnapper> floorLayer = new List<DraggableGridSnapper>();
         private List<DraggableGridSnapper> wallLayer = new List<DraggableGridSnapper>();
         private List<DraggableGridSnapper> stuffLayer = new List<DraggableGridSnapper>();
+        private List<DraggableGridSnapper> lightsLayer = new List<DraggableGridSnapper>();
 
         public ObservableCollection<ObservableCollection<PatrolPoint>> patrolRoutes = new ObservableCollection<ObservableCollection<PatrolPoint>>();
         public ObservableCollection<int> patrolRouteIndices = new ObservableCollection<int>();
@@ -56,7 +57,7 @@ namespace StaniEdit
         {
             InitializeComponent();
 
-            RedrawGrid(3, 3);
+            RedrawGrid(5, 5);
 
             widthRatio = canvasRoom.Width / realWidth;
             heightRatio = canvasRoom.Height / realHeight;
@@ -167,7 +168,22 @@ namespace StaniEdit
 
         private void btnWallH_Click(object sender, RoutedEventArgs e)
         {
-            Mesh w = MeshFactory.MakeHorizontalWall(this);
+            Mesh w;
+            switch (cmbHWalls.SelectedIndex) { 
+                case 0:
+                    w = MeshFactory.MakeHorizontalWall100(this);
+                    break;
+                case 1:
+                    w = MeshFactory.MakeHorizontalWall200(this);
+                    break;
+                case 2:
+                    w = MeshFactory.MakeHorizontalWall400(this);
+                    break;
+                default:
+                    w = MeshFactory.MakeHorizontalWall100(this);
+                    break;
+            }
+             
             w.Init(this);
             canvasRoom.Children.Add(w);
             wallLayer.Add(w);
@@ -185,7 +201,23 @@ namespace StaniEdit
 
         private void btnWallV_Click(object sender, RoutedEventArgs e)
         {
-            Mesh w = MeshFactory.MakeVerticalWall(this);
+            Mesh w;
+            switch (cmbVWalls.SelectedIndex)
+            {
+                case 0:
+                    w = MeshFactory.MakeVerticalWall100(this);
+                    break;
+                case 1:
+                    w = MeshFactory.MakeVerticalWall200(this);
+                    break;
+                case 2:
+                    w = MeshFactory.MakeVerticalWall400(this);
+                    break;
+                default:
+                    w = MeshFactory.MakeVerticalWall100(this);
+                    break;
+            }
+          
             w.Init(this);
             canvasRoom.Children.Add(w);
             wallLayer.Add(w);
@@ -273,6 +305,24 @@ namespace StaniEdit
             pp.SnapToGrid();
         }
 
+        private void btnLight_Click(object sender, RoutedEventArgs e)
+        {
+            Light l = new Light();
+            l.Init(this);
+            canvasRoom.Children.Add(l);
+            lightsLayer.Add(l);
+            if (!(bool)radLights.IsChecked)
+            {
+                EnableLightsLayer();
+                radLights.IsChecked = true;
+            }
+            if (selected != null)
+                selected.Deselect();
+            selected = l;
+            l.Select();
+            l.SnapToGrid();
+        }
+
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             Clear();
@@ -286,6 +336,7 @@ namespace StaniEdit
             floorLayer.Clear();
             wallLayer.Clear();
             stuffLayer.Clear();
+            lightsLayer.Clear();
             EnableFloorLayer();
             chkNorth.IsChecked = false;
             chkEast.IsChecked = false;
@@ -305,7 +356,7 @@ namespace StaniEdit
 
         private void EnableFloorLayer()
         {
-            RedrawGrid(3, 3);
+            RedrawGrid(5, 5);
             if (selected != null)
             {
                 selected.Deselect();
@@ -314,6 +365,7 @@ namespace StaniEdit
             foreach (DraggableGridSnapper control in floorLayer) control.Enable();
             foreach (DraggableGridSnapper control in wallLayer) control.Disable();
             foreach (DraggableGridSnapper control in stuffLayer) control.Disable();
+            foreach (DraggableGridSnapper control in lightsLayer) control.Disable();
         }
 
         private void radStuff_Checked(object sender, RoutedEventArgs e)
@@ -323,7 +375,7 @@ namespace StaniEdit
 
         private void EnableStuffLayer()
         {
-            RedrawGrid(36, 36);
+            RedrawGrid(60, 60);
             if (selected != null)
             {
                 selected.Deselect();
@@ -332,6 +384,7 @@ namespace StaniEdit
             foreach (DraggableGridSnapper control in floorLayer) control.Disable();
             foreach (DraggableGridSnapper control in wallLayer) control.Disable();
             foreach (DraggableGridSnapper control in stuffLayer) control.Enable();
+            foreach (DraggableGridSnapper control in lightsLayer) control.Disable();
         }
 
         private void radWalls_Checked(object sender, RoutedEventArgs e)
@@ -341,7 +394,7 @@ namespace StaniEdit
 
         private void EnableWallsLayer()
         {
-            RedrawGrid(12, 12);
+            RedrawGrid(20, 20);
             if (selected != null)
             {
                 selected.Deselect();
@@ -350,6 +403,26 @@ namespace StaniEdit
             foreach (DraggableGridSnapper control in floorLayer) control.Disable();
             foreach (DraggableGridSnapper control in wallLayer) control.Enable();
             foreach (DraggableGridSnapper control in stuffLayer) control.Disable();
+            foreach (DraggableGridSnapper control in lightsLayer) control.Disable();
+        }
+
+        private void radLights_Checked(object sender, RoutedEventArgs e)
+        {
+            EnableLightsLayer();
+        }
+
+        private void EnableLightsLayer()
+        {
+            RedrawGrid(1, 1);
+            if (selected != null)
+            {
+                selected.Deselect();
+                selected = null;
+            }
+            foreach (DraggableGridSnapper control in floorLayer) control.Disable();
+            foreach (DraggableGridSnapper control in wallLayer) control.Disable();
+            foreach (DraggableGridSnapper control in stuffLayer) control.Disable();
+            foreach (DraggableGridSnapper control in lightsLayer) control.Enable();
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -364,6 +437,7 @@ namespace StaniEdit
                     floorLayer.Remove(selected);
                     wallLayer.Remove(selected);
                     stuffLayer.Remove(selected);
+                    lightsLayer.Remove(selected);
                     canvasRoom.Children.Remove(selected);
                     selected = null;
                 }
@@ -386,8 +460,8 @@ namespace StaniEdit
         {
             northDoor = MeshFactory.MakeHorizontalDoorWall(this);
             canvasRoom.Children.Add(northDoor);
-            northDoor.SetValue(Canvas.LeftProperty, 400.0 * widthRatio);
-            northDoor.SetValue(Canvas.TopProperty, 0.0);
+            northDoor.SetValue(Canvas.LeftProperty, 800.0 * widthRatio);
+            northDoor.SetValue(Canvas.TopProperty, -20.0 * heightRatio);
         }
 
 
@@ -396,23 +470,23 @@ namespace StaniEdit
             eastDoor = MeshFactory.MakeVerticalDoorWall(this);
             canvasRoom.Children.Add(eastDoor);
             eastDoor.SetValue(Canvas.LeftProperty, canvasRoom.Width);
-            eastDoor.SetValue(Canvas.TopProperty, 400.0 * heightRatio);
+            eastDoor.SetValue(Canvas.TopProperty, 800.0 * heightRatio);
         }
 
         private void chkSouth_Checked(object sender, RoutedEventArgs e)
         {
             southDoor = MeshFactory.MakeHorizontalDoorWall(this);
             canvasRoom.Children.Add(southDoor);
-            southDoor.SetValue(Canvas.LeftProperty, 400.0 * widthRatio);
-            southDoor.SetValue(Canvas.TopProperty, canvasRoom.Height - southDoor.Height);
+            southDoor.SetValue(Canvas.LeftProperty, 800.0 * widthRatio);
+            southDoor.SetValue(Canvas.TopProperty, canvasRoom.Height);
         }
 
         private void chkWest_Checked(object sender, RoutedEventArgs e)
         {
             westDoor = MeshFactory.MakeVerticalDoorWall(this);
             canvasRoom.Children.Add(westDoor);
-            westDoor.SetValue(Canvas.LeftProperty, 0.0);
-            westDoor.SetValue(Canvas.TopProperty, 400.0 * heightRatio);
+            westDoor.SetValue(Canvas.LeftProperty, -20.0 * widthRatio);
+            westDoor.SetValue(Canvas.TopProperty, 800.0 * heightRatio);
         }
 
         private void chkNorth_Unchecked(object sender, RoutedEventArgs e)
@@ -536,9 +610,39 @@ namespace StaniEdit
                         f.WorldOriginY = md.y;
                         f.Angle = md.rotation;
                     }
-                    else if (md.staticMesh == "wall")
+                    else if (md.staticMesh == "wall400")
                     {
-                        Mesh w = MeshFactory.MakeHorizontalWall(this);
+                        Mesh w = MeshFactory.MakeHorizontalWall400(this);
+                        w.Init(this);
+                        canvasRoom.Children.Add(w);
+                        wallLayer.Add(w);
+                        w.WorldOriginX = md.x;
+                        w.WorldOriginY = md.y;
+                        w.Angle = md.rotation;
+                        if (w.Angle != 0.0)
+                        {
+                            w.snapMode = DraggableGridSnapper.SnapMode.VerticalLineSnap;
+
+                        }
+                    }
+                    else if (md.staticMesh == "wall200")
+                    {
+                        Mesh w = MeshFactory.MakeHorizontalWall200(this);
+                        w.Init(this);
+                        canvasRoom.Children.Add(w);
+                        wallLayer.Add(w);
+                        w.WorldOriginX = md.x;
+                        w.WorldOriginY = md.y;
+                        w.Angle = md.rotation;
+                        if (w.Angle != 0.0)
+                        {
+                            w.snapMode = DraggableGridSnapper.SnapMode.VerticalLineSnap;
+
+                        }
+                    }
+                    else if (md.staticMesh == "wall100")
+                    {
+                        Mesh w = MeshFactory.MakeHorizontalWall100(this);
                         w.Init(this);
                         canvasRoom.Children.Add(w);
                         wallLayer.Add(w);
@@ -574,6 +678,7 @@ namespace StaniEdit
                     i.WorldOriginX = id.x;
                     i.WorldOriginY = id.y;
                 }
+                
                 foreach (GuardDefinition gd in sgd.guards)
                 {
                     Guard g = new Guard();
@@ -584,6 +689,20 @@ namespace StaniEdit
                     g.WorldOriginY = gd.y;
                     g.cmbRoutes.SelectedIndex = gd.patrolRouteIndex;
                     g.cmbStart.SelectedIndex = gd.startIndex;
+                }
+
+                if (sgd.lights != null)
+                {
+                    foreach (LightDefinition ld in sgd.lights)
+                    {
+                        Light l = new Light();
+                        l.Init(this);
+                        canvasRoom.Children.Add(l);
+                        lightsLayer.Add(l);
+                        l.WorldOriginX = ld.x;
+                        l.WorldOriginY = ld.y;
+                        l.Radius = ld.radius;
+                    }
                 }
             }
 
@@ -624,6 +743,11 @@ namespace StaniEdit
 
 
 
+            foreach (Light d in lightsLayer)
+            {
+                g.lights.Add(new LightDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, radius = d.Radius });
+            }
+            
             foreach (DraggableGridSnapper d in stuffLayer)
             {
                 if (d is Item) {
@@ -728,6 +852,16 @@ namespace StaniEdit
                 cmbObjects.Items.Add(c);
 
             fs.Close();
+        }
+
+        private void cmbHWalls_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void cmbVWalls_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
 
         

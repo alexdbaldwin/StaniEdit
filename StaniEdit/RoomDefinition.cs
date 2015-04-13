@@ -19,6 +19,8 @@ namespace StaniEdit
         public List<GuardDefinition> guards = new List<GuardDefinition>();
         [DataMember]
         public List<CameraDefinition> cameras = new List<CameraDefinition>();
+        [DataMember]
+        public List<LightDefinition> lights = new List<LightDefinition>();
     }
 
     [DataContract]
@@ -55,6 +57,17 @@ namespace StaniEdit
         public double y = 0;
         [DataMember]
         public double rotation = 0.0;
+    }
+
+    [DataContract]
+    class LightDefinition
+    {
+        [DataMember]
+        public double x = 0;
+        [DataMember]
+        public double y = 0;
+        [DataMember]
+        public double radius = 0.0;
     }
 
     [DataContract]

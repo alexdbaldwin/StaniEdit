@@ -22,14 +22,17 @@ namespace StaniEdit
         public double startRotation = 0.0;
         [DataMember]
         public string assetName = "";
+        [DataMember]
+        public bool lineSnap = false;
 
-        public CustomMesh(double w, double h, double oX, double oY, double rot, string name) {
+        public CustomMesh(double w, double h, double oX, double oY, double rot, string name, bool ls = false) {
             width = w;
             height = h;
             originX = oX;
             originY = oY;
             startRotation = rot;
             assetName = name;
+            lineSnap = ls;
         }
 
         public override string ToString()

@@ -32,7 +32,7 @@
     </UserControl.ContextMenu>
     <Canvas Name="canvasHolder">
 
-        <Rectangle Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="3" Width="{Binding Path=ActualWidth, ElementName=canvasHolder}" Height="{Binding Path=ActualHeight, ElementName=canvasHolder}">
+        <Rectangle Canvas.ZIndex="2" Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="1" Width="{Binding Path=ActualWidth, ElementName=canvasHolder}" Height="{Binding Path=ActualHeight, ElementName=canvasHolder}">
             
         </Rectangle>
         <Polygon Panel.ZIndex="10" Name="dir" Fill="Red" Width="10" Canvas.Right="-10">
@@ -46,7 +46,7 @@
             </Polygon.RenderTransform>
 
         </Polygon>
-        <Label Name="lblLabel" Foreground="Black"></Label>
+        <Label Canvas.ZIndex="5" Name="lblLabel" Foreground="Black"></Label>
     </Canvas>
     
    
