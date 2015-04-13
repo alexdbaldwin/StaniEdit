@@ -148,6 +148,10 @@ namespace StaniEdit
             OnMouseMove(e);
         }
 
+        public void SafeDelete() {
+            dragging = false;
+        }
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);

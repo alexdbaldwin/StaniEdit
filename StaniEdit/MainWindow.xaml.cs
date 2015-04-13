@@ -439,6 +439,7 @@ namespace StaniEdit
                     stuffLayer.Remove(selected);
                     lightsLayer.Remove(selected);
                     canvasRoom.Children.Remove(selected);
+                    selected.SafeDelete();
                     selected = null;
                 }
             }
@@ -562,24 +563,26 @@ namespace StaniEdit
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RoomDefinition));
             RoomDefinition room = (RoomDefinition)serializer.ReadObject(fs);
 
+            cmbRoomType.SelectedIndex = room.roomType;
+
 
             if(room.northDoor) {
-                chkNorth_Checked(this, new RoutedEventArgs());
+                //chkNorth_Checked(this, new RoutedEventArgs());
                 chkNorth.IsChecked = true;
             }
             if (room.eastDoor)
             {
-                chkEast_Checked(this, new RoutedEventArgs());
+                //chkEast_Checked(this, new RoutedEventArgs());
                 chkEast.IsChecked = true;
             }
             if (room.southDoor)
             {
-                chkSouth_Checked(this, new RoutedEventArgs());
+                //chkSouth_Checked(this, new RoutedEventArgs());
                 chkSouth.IsChecked = true;
             }
             if (room.westDoor)
             {
-                chkWest_Checked(this, new RoutedEventArgs());
+                //chkWest_Checked(this, new RoutedEventArgs());
                 chkWest.IsChecked = true;
             }
 
