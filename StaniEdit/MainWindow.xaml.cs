@@ -736,10 +736,10 @@ namespace StaniEdit
                 g.meshes.Add(new MeshDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, staticMesh = d.MeshType, rotation = d.Angle });
             }
 
-            foreach (Mesh d in stuffLayer)
-            {
-                g.meshes.Add(new MeshDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, staticMesh = d.MeshType, rotation = d.Angle });
-            }
+            //foreach (Mesh d in stuffLayer)
+            //{
+            //    g.meshes.Add(new MeshDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, staticMesh = d.MeshType, rotation = d.Angle });
+            //}
 
 
 
@@ -759,6 +759,10 @@ namespace StaniEdit
                 else if (d is Camera)
                 {
                     g.cameras.Add(new CameraDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, rotation = d.Angle });
+                }
+                else if (d is Mesh)
+                {
+                    g.meshes.Add(new MeshDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, staticMesh = ((Mesh)d).MeshType, rotation = d.Angle });
                 }
             }
 
