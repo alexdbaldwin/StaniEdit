@@ -65,7 +65,7 @@ namespace StaniEdit
             slider = new Slider();
             slider.Value = radius;
             slider.Minimum = 50;
-            slider.Maximum = 500;
+            slider.Maximum = 1000;
             slider.Width = 100;
 
             lblRadius = new Label();
