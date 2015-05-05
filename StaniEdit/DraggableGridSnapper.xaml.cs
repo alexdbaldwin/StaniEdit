@@ -144,6 +144,7 @@ namespace StaniEdit
 
         }
 
+
         public void OnMouseMove_(MouseEventArgs e) {
             OnMouseMove(e);
         }
@@ -152,11 +153,22 @@ namespace StaniEdit
             dragging = false;
         }
 
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+            mainWindow.lblInfo.Content = "";
+        }
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
 
-            
+            if (this is Mesh)
+            {
+                mainWindow.lblInfo.Content = ((Mesh)this).MeshType;
+                mainWindow.lblInfo.SetValue(Canvas.LeftProperty,e.GetPosition(Parent as FrameworkElement).X + 20);
+                mainWindow.lblInfo.SetValue(Canvas.TopProperty, e.GetPosition(Parent as FrameworkElement).Y + 20);
+            }
 
             if (dragging)
             {

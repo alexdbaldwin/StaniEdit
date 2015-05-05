@@ -26,6 +26,9 @@ namespace StaniEdit
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        public Label lblInfo;
+
         public int gridX = 36;
         public int gridY = 36;
         public double tileWidth, tileHeight;
@@ -63,6 +66,13 @@ namespace StaniEdit
             heightRatio = canvasRoom.Height / realHeight;
 
             LoadCustomObjects();
+
+            lblInfo = new Label();
+            lblInfo.Content = "";
+            
+            canvasRoom.Children.Add(lblInfo);
+
+            lblInfo.SetValue(Canvas.ZIndexProperty, 50);
 
         }
 
@@ -347,6 +357,7 @@ namespace StaniEdit
             cmbRarity.SelectedIndex = 0;
             patrolRoutes.Clear();
             patrolRouteIndices.Clear();
+            canvasRoom.Children.Add(lblInfo);
         }
 
         private void radFloor_Checked(object sender, RoutedEventArgs e)
@@ -558,6 +569,8 @@ namespace StaniEdit
         {
             Clear();
 
+            window.Title = file;
+
             FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
 
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(RoomDefinition));
@@ -715,6 +728,8 @@ namespace StaniEdit
         }
 
         private void SaveRoom(string file) {
+
+            window.Title = file;
 
             FileStream fs = new FileStream(file, FileMode.Create, FileAccess.Write);
          
