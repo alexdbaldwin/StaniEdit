@@ -109,6 +109,8 @@ namespace StaniEdit
         [DataMember]
         public int roomRarity = 0;
         [DataMember]
+        public int roomFloor = 0;
+        [DataMember]
         public List<SpawnGroupDefinition> spawnGroups = new List<SpawnGroupDefinition>();
         [DataMember]
         public List<PatrolRouteDefinition> patrolRoutes = new List<PatrolRouteDefinition>();

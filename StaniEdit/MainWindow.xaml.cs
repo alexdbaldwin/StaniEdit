@@ -577,6 +577,8 @@ namespace StaniEdit
             RoomDefinition room = (RoomDefinition)serializer.ReadObject(fs);
 
             cmbRoomType.SelectedIndex = room.roomType;
+            cmbRarity.SelectedIndex = room.roomRarity;
+            cmbFloorType.SelectedIndex = room.roomFloor;
 
 
             if(room.northDoor) {
@@ -706,6 +708,15 @@ namespace StaniEdit
                     g.cmbRoutes.SelectedIndex = gd.patrolRouteIndex;
                     g.cmbStart.SelectedIndex = gd.startIndex;
                 }
+                foreach (CameraDefinition cd in sgd.cameras) {
+                    Camera c = new Camera();
+                    c.Init(this);
+                    canvasRoom.Children.Add(c);
+                    stuffLayer.Add(c);
+                    c.WorldOriginX = cd.x;
+                    c.WorldOriginY = cd.y;
+                    c.Angle = cd.rotation;
+                }
 
                 if (sgd.lights != null)
                 {
@@ -741,6 +752,7 @@ namespace StaniEdit
             if (westDoor != null) room.westDoor = true;
             room.roomRarity = cmbRarity.SelectedIndex;
             room.roomType = cmbRoomType.SelectedIndex;
+            room.roomFloor = cmbFloorType.SelectedIndex;
 
             SpawnGroupDefinition g = new SpawnGroupDefinition();
 
