@@ -33,6 +33,11 @@ namespace StaniEdit
         public double originX = 0.0;
         public double originY = 0.0;
 
+        public virtual DraggableGridSnapper Clone(MainWindow main)
+        {
+            return null;
+        }
+
         public double WorldOriginX {
             get {
                 GeneralTransform t = RenderTransform;

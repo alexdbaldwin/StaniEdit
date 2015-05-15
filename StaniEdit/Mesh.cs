@@ -29,5 +29,19 @@ namespace StaniEdit
             this.originX = originX;
             this.originY = originY;
         }
+
+        public override DraggableGridSnapper Clone(MainWindow main)
+        {
+            Mesh res = new Mesh(meshType, realWidth, realHeight, originX, originY, Angle, snapMode, Colors.Magenta, zIndex);
+            res.Init(main);
+            main.canvasRoom.Children.Add(res);
+            main.stuffLayer.Add(res);
+            if (!(bool)main.radStuff.IsChecked)
+            {
+                main.EnableStuffLayer();
+                main.radStuff.IsChecked = true;
+            }
+            return res;
+        }
     }
 }

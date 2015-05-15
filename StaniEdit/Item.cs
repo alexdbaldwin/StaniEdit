@@ -26,5 +26,18 @@ namespace StaniEdit
             realHeight = height;
         }
 
+        //public override DraggableGridSnapper Clone(MainWindow main){
+        //    Item i = new Item(this.Width, this.Height);
+        //    i.Init(main);
+        //    main.canvasRoom.Children.Add(i);
+        //    main.stuffLayer.Add(i);
+        //    if (!(bool)main.radStuff.IsChecked)
+        //    {
+        //        main.EnableStuffLayer();
+        //        main.radStuff.IsChecked = true;
+        //    }
+        //    return i;
+        //}
+
     }
 }

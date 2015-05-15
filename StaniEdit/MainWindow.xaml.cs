@@ -39,10 +39,10 @@ namespace StaniEdit
         public double widthRatio = 1.0;
         public double heightRatio = 1.0;
 
-        private List<DraggableGridSnapper> floorLayer = new List<DraggableGridSnapper>();
-        private List<DraggableGridSnapper> wallLayer = new List<DraggableGridSnapper>();
-        private List<DraggableGridSnapper> stuffLayer = new List<DraggableGridSnapper>();
-        private List<DraggableGridSnapper> lightsLayer = new List<DraggableGridSnapper>();
+        public List<DraggableGridSnapper> floorLayer = new List<DraggableGridSnapper>();
+        public List<DraggableGridSnapper> wallLayer = new List<DraggableGridSnapper>();
+        public List<DraggableGridSnapper> stuffLayer = new List<DraggableGridSnapper>();
+        public List<DraggableGridSnapper> lightsLayer = new List<DraggableGridSnapper>();
 
         public ObservableCollection<ObservableCollection<PatrolPoint>> patrolRoutes = new ObservableCollection<ObservableCollection<PatrolPoint>>();
         public ObservableCollection<int> patrolRouteIndices = new ObservableCollection<int>();
@@ -365,7 +365,7 @@ namespace StaniEdit
             EnableFloorLayer();
         }
 
-        private void EnableFloorLayer()
+        public void EnableFloorLayer()
         {
             RedrawGrid(5, 5);
             if (selected != null)
@@ -384,7 +384,7 @@ namespace StaniEdit
             EnableStuffLayer();
         }
 
-        private void EnableStuffLayer()
+        public void EnableStuffLayer()
         {
             RedrawGrid(60, 60);
             if (selected != null)
@@ -403,7 +403,7 @@ namespace StaniEdit
             EnableWallsLayer();
         }
 
-        private void EnableWallsLayer()
+        public void EnableWallsLayer()
         {
             RedrawGrid(20, 20);
             if (selected != null)
@@ -422,7 +422,7 @@ namespace StaniEdit
             EnableLightsLayer();
         }
 
-        private void EnableLightsLayer()
+        public void EnableLightsLayer()
         {
             RedrawGrid(1, 1);
             if (selected != null)
@@ -469,26 +469,13 @@ namespace StaniEdit
             if(e.Key == Key.W)
             {
                 if (selected != null){
-                    if (selected is Light)
-                    {
-                        Light l = new Light();
-                        Light temp = (Light)selected;
-                        l.Init(this);                       
-                        canvasRoom.Children.Add(l);
-                        lightsLayer.Add(l);
-                        l.Radius = temp.Radius;
-                        if (!(bool)radLights.IsChecked)
-                        {
-                            EnableLightsLayer();
-                            radLights.IsChecked = true;
-                        }
-                        if (selected != null)
-                            selected.Deselect();
-                        selected = l;
-                        l.Select();
-                        l.SnapToGrid();
-                    }
-                    
+                    DraggableGridSnapper d = selected.Clone(this);
+                    if(d != null && selected != null){
+                        selected.Deselect();
+                        selected = d;
+                        d.Select();
+                        d.SnapToGrid();
+                    }                   
                 }
             }
         }

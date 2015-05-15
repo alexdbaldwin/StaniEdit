@@ -22,6 +22,21 @@ namespace StaniEdit
 
         private Ellipse ellipse;
 
+        public override DraggableGridSnapper Clone(MainWindow main)
+        {
+            Light l = new Light();
+            l.Init(main);
+            main.canvasRoom.Children.Add(l);
+            main.lightsLayer.Add(l);
+            l.Radius = this.Radius;
+            if (!(bool)main.radLights.IsChecked)
+            {
+                main.EnableLightsLayer();
+                main.radLights.IsChecked = true;
+            }           
+            return l;
+        }
+
         public double Radius {
             get { return radius; }
             set {
