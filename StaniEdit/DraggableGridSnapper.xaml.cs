@@ -107,18 +107,21 @@ namespace StaniEdit
         public void Select() {
             rect.Stroke = new SolidColorBrush(Colors.Blue);
             SetValue(Canvas.ZIndexProperty, 10);
+            dir.Visibility = System.Windows.Visibility.Visible;
         }
 
         public void Deselect() {
             dragging = false;
             rect.Stroke = new SolidColorBrush(Colors.Transparent);
             SetValue(Canvas.ZIndexProperty, zIndex);
+            dir.Visibility = System.Windows.Visibility.Hidden;
         }
 
         public void Enable() {
             IsEnabled = true;
             rect.Fill = color;
             this.IsHitTestVisible = true;
+            
         }
 
         public void Disable() {

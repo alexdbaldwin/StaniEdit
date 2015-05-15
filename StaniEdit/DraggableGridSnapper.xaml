@@ -35,7 +35,7 @@
         <Rectangle Canvas.ZIndex="2" Name="rect" Fill="SkyBlue" Stroke="Transparent" StrokeThickness="1" Width="{Binding Path=ActualWidth, ElementName=canvasHolder}" Height="{Binding Path=ActualHeight, ElementName=canvasHolder}">
             
         </Rectangle>
-        <Polygon Panel.ZIndex="10" Name="dir" Fill="Red" Width="10" Canvas.Right="-10">
+        <Polygon Panel.ZIndex="10" Name="dir" Fill="Red" Width="10" Canvas.Right="-10" Visibility="Hidden">
             <Polygon.Points>
                 <Point  X="0" Y="0"></Point>
                 <Point X="10" Y="0.5"></Point>
