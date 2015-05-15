@@ -466,6 +466,31 @@ namespace StaniEdit
 
                 }
             }
+            if(e.Key == Key.W)
+            {
+                if (selected != null){
+                    if (selected is Light)
+                    {
+                        Light l = new Light();
+                        Light temp = (Light)selected;
+                        l.Init(this);                       
+                        canvasRoom.Children.Add(l);
+                        lightsLayer.Add(l);
+                        l.Radius = temp.Radius;
+                        if (!(bool)radLights.IsChecked)
+                        {
+                            EnableLightsLayer();
+                            radLights.IsChecked = true;
+                        }
+                        if (selected != null)
+                            selected.Deselect();
+                        selected = l;
+                        l.Select();
+                        l.SnapToGrid();
+                    }
+                    
+                }
+            }
         }
 
         private void chkNorth_Checked(object sender, RoutedEventArgs e)
