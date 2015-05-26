@@ -717,6 +717,7 @@ namespace StaniEdit
                     stuffLayer.Add(g);
                     g.WorldOriginX = gd.x;
                     g.WorldOriginY = gd.y;
+                    g.Angle = gd.rotation;
                     g.cmbRoutes.SelectedIndex = gd.patrolRouteIndex;
                     g.cmbStart.SelectedIndex = gd.startIndex;
                 }
@@ -796,7 +797,7 @@ namespace StaniEdit
                     g.items.Add(new ItemDefinition() { x = d.WorldOriginX, y = d.WorldOriginY });
                 }
                 else if (d is Guard){
-                    g.guards.Add(new GuardDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, patrolRouteIndex = ((Guard)d).PatrolRouteIndex, startIndex = ((Guard)d).StartIndex });
+                    g.guards.Add(new GuardDefinition() { x = d.WorldOriginX, y = d.WorldOriginY, patrolRouteIndex = ((Guard)d).PatrolRouteIndex, startIndex = ((Guard)d).StartIndex, rotation = d.Angle });
                 }
                 else if (d is Camera)
                 {

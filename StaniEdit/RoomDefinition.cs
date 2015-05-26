@@ -46,6 +46,8 @@ namespace StaniEdit
         public int patrolRouteIndex = -1;
         [DataMember]
         public int startIndex = 0;
+        [DataMember]
+        public double rotation = 0.0;
     }
 
     [DataContract]
